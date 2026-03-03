@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Github, Code2, Linkedin, Save, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,23 +6,67 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const StudentProfilePage: React.FC = () => {
-  const { studentProfile, updateStudentProfile } = useAuth();
+  const { studentProfile, refreshProfile } = useAuth();
   const { toast } = useToast();
 
   const [links, setLinks] = useState({
-    leetcode: studentProfile?.platformLinks?.leetcode || '',
-    github: studentProfile?.platformLinks?.github || '',
-    linkedin: studentProfile?.platformLinks?.linkedin || '',
+    leetcode: '',
+    github: '',
+    linkedin: '',
   });
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSave = () => {
-    updateStudentProfile({
-      platformLinks: links,
-      profileComplete: !!(links.leetcode && links.github && links.linkedin),
-    });
-    toast({ title: 'Profile updated!', description: 'Your platform links have been saved.' });
+  // Load existing links from student_profiles
+  useEffect(() => {
+    if (!studentProfile?.id) return;
+    supabase
+      .from('student_profiles')
+      .select('leetcode_url, github_url, linkedin_url')
+      .eq('student_id', studentProfile.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) {
+          setLinks({
+            leetcode: data.leetcode_url || '',
+            github: data.github_url || '',
+            linkedin: data.linkedin_url || '',
+          });
+        }
+      });
+  }, [studentProfile?.id]);
+
+  const handleSave = async () => {
+    if (!studentProfile?.id) return;
+    setIsSaving(true);
+
+    const profileComplete = !!(links.leetcode && links.github && links.linkedin);
+
+    // Update student_profiles with links
+    const { error: profileError } = await supabase
+      .from('student_profiles')
+      .update({
+        leetcode_url: links.leetcode || null,
+        github_url: links.github || null,
+        linkedin_url: links.linkedin || null,
+      })
+      .eq('student_id', studentProfile.id);
+
+    // Update profile_complete on students table
+    await supabase
+      .from('students')
+      .update({ profile_complete: profileComplete })
+      .eq('id', studentProfile.id);
+
+    if (profileError) {
+      toast({ title: 'Error saving profile', description: profileError.message, variant: 'destructive' });
+    } else {
+      toast({ title: 'Profile updated!', description: 'Your platform links have been saved.' });
+      await refreshProfile();
+    }
+    setIsSaving(false);
   };
 
   return (
@@ -91,11 +135,11 @@ const StudentProfilePage: React.FC = () => {
                 onChange={(e) => setLinks(prev => ({ ...prev, linkedin: e.target.value }))} />
             </div>
 
-            <Button className="btn-primary w-full gap-2" onClick={handleSave}>
-              <Save className="w-4 h-4" /> Save Profile
+            <Button className="btn-primary w-full gap-2" onClick={handleSave} disabled={isSaving}>
+              <Save className="w-4 h-4" /> {isSaving ? 'Saving...' : 'Save Profile'}
             </Button>
 
-            {studentProfile?.profileComplete && (
+            {studentProfile?.profile_complete && (
               <div className="flex items-center gap-2 text-success text-sm">
                 <CheckCircle2 className="w-4 h-4" /> Profile complete! AI can now verify your skills.
               </div>

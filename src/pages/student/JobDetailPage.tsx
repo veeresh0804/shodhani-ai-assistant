@@ -1,26 +1,92 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Building2, MapPin, Clock, Briefcase, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Building2, MapPin, Clock, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
-const JOB_DATA: Record<string, any> = {
-  '1': { title: 'Senior Full Stack Developer', company: 'TechCorp AI', location: 'Bangalore', type: 'Full-time', salary: '15-25 LPA', experience: '2-5 years',
-    description: 'We are looking for a Senior Full Stack Developer to join our AI-powered recruitment platform team. You will work on building scalable web applications using React, Node.js, and TypeScript.',
-    requiredSkills: ['React', 'Node.js', 'TypeScript', 'PostgreSQL'],
-    preferredSkills: ['GraphQL', 'Docker', 'AWS'],
-  },
-  '2': { title: 'ML Engineer', company: 'DataVerse Inc.', location: 'Remote', type: 'Full-time', salary: '18-30 LPA', experience: '3+ years',
-    description: 'Join our ML team to build and deploy production machine learning models. Experience with NLP, deep learning, and MLOps required.',
-    requiredSkills: ['Python', 'TensorFlow', 'PyTorch', 'MLOps'],
-    preferredSkills: ['NLP', 'Computer Vision', 'Kubeflow'],
-  },
-};
+interface JobDetail {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  job_type: string;
+  experience_required: string | null;
+  required_skills: string[];
+  preferred_skills: string[] | null;
+  salary_range: string | null;
+  recruiters: { company_name: string } | null;
+}
 
 const JobDetailPage: React.FC = () => {
   const { jobId } = useParams();
-  const job = JOB_DATA[jobId || '1'] || JOB_DATA['1'];
+  const { studentProfile } = useAuth();
+  const { toast } = useToast();
+  const [job, setJob] = useState<JobDetail | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isApplying, setIsApplying] = useState(false);
+  const [hasApplied, setHasApplied] = useState(false);
+
+  useEffect(() => {
+    if (!jobId) return;
+    const fetchJob = async () => {
+      const { data } = await supabase
+        .from('jobs')
+        .select('id, title, description, location, job_type, experience_required, required_skills, preferred_skills, salary_range, recruiters(company_name)')
+        .eq('id', jobId)
+        .single();
+      setJob(data as any);
+      setIsLoading(false);
+    };
+    fetchJob();
+
+    // Check if already applied
+    if (studentProfile?.id) {
+      supabase
+        .from('applications')
+        .select('id')
+        .eq('job_id', jobId)
+        .eq('student_id', studentProfile.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data) setHasApplied(true);
+        });
+    }
+  }, [jobId, studentProfile?.id]);
+
+  const handleApply = async () => {
+    if (!studentProfile?.id || !jobId) {
+      toast({ title: 'Please complete your profile first', variant: 'destructive' });
+      return;
+    }
+    setIsApplying(true);
+    const { error } = await supabase.from('applications').insert({
+      job_id: jobId,
+      student_id: studentProfile.id,
+    });
+    if (error) {
+      if (error.code === '23505') {
+        toast({ title: 'Already applied to this job' });
+      } else {
+        toast({ title: 'Error applying', description: error.message, variant: 'destructive' });
+      }
+    } else {
+      toast({ title: 'Application submitted!', description: 'You can track it in My Applications.' });
+      setHasApplied(true);
+    }
+    setIsApplying(false);
+  };
+
+  if (isLoading) {
+    return <div className="min-h-screen pt-20 pb-12 flex items-center justify-center text-muted-foreground">Loading...</div>;
+  }
+
+  if (!job) {
+    return <div className="min-h-screen pt-20 pb-12 flex items-center justify-center text-muted-foreground">Job not found</div>;
+  }
 
   return (
     <div className="min-h-screen pt-20 pb-12">
@@ -34,47 +100,45 @@ const JobDetailPage: React.FC = () => {
             <div className="space-y-3">
               <CardTitle className="text-2xl">{job.title}</CardTitle>
               <div className="flex flex-wrap items-center gap-3 text-muted-foreground">
-                <span className="flex items-center gap-1"><Building2 className="w-4 h-4" />{job.company}</span>
+                <span className="flex items-center gap-1"><Building2 className="w-4 h-4" />{job.recruiters?.company_name || 'Company'}</span>
                 <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{job.location}</span>
-                <span className="flex items-center gap-1"><Clock className="w-4 h-4" />{job.experience}</span>
-                <Badge variant="secondary">{job.type}</Badge>
+                {job.experience_required && <span className="flex items-center gap-1"><Clock className="w-4 h-4" />{job.experience_required}</span>}
+                <Badge variant="secondary">{job.job_type}</Badge>
               </div>
-              <p className="text-muted-foreground">💰 {job.salary}</p>
+              {job.salary_range && <p className="text-muted-foreground">💰 {job.salary_range}</p>}
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
               <h3 className="font-semibold mb-2">Job Description</h3>
-              <p className="text-muted-foreground">{job.description}</p>
+              <p className="text-muted-foreground whitespace-pre-wrap">{job.description}</p>
             </div>
 
             <div>
               <h3 className="font-semibold mb-2">Required Skills</h3>
               <div className="flex flex-wrap gap-2">
-                {job.requiredSkills.map((skill: string) => (
+                {job.required_skills.map((skill: string) => (
                   <Badge key={skill} className="badge-primary">{skill}</Badge>
                 ))}
               </div>
             </div>
 
-            <div>
-              <h3 className="font-semibold mb-2">Preferred Skills</h3>
-              <div className="flex flex-wrap gap-2">
-                {job.preferredSkills.map((skill: string) => (
-                  <Badge key={skill} variant="secondary">{skill}</Badge>
-                ))}
+            {job.preferred_skills && job.preferred_skills.length > 0 && (
+              <div>
+                <h3 className="font-semibold mb-2">Preferred Skills</h3>
+                <div className="flex flex-wrap gap-2">
+                  {job.preferred_skills.map((skill: string) => (
+                    <Badge key={skill} variant="secondary">{skill}</Badge>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="flex gap-4 pt-4">
-              <Button className="btn-primary gap-2">
-                <CheckCircle2 className="w-4 h-4" /> Apply Now
+              <Button className="btn-primary gap-2" onClick={handleApply} disabled={isApplying || hasApplied}>
+                <CheckCircle2 className="w-4 h-4" />
+                {hasApplied ? 'Already Applied' : isApplying ? 'Applying...' : 'Apply Now'}
               </Button>
-              <Link to={`/student/jobs/${jobId}/eligibility`}>
-                <Button variant="outline" className="gap-2">
-                  <Briefcase className="w-4 h-4" /> Check Eligibility
-                </Button>
-              </Link>
             </div>
           </CardContent>
         </Card>

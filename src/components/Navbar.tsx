@@ -44,7 +44,7 @@ const Navbar: React.FC = () => {
   };
 
   const getUserName = () => {
-    if (userType === 'recruiter') return recruiterProfile?.recruiterName || 'Recruiter';
+    if (userType === 'recruiter') return recruiterProfile?.recruiter_name || 'Recruiter';
     if (userType === 'student') return studentProfile?.name || 'Student';
     return '';
   };
@@ -95,7 +95,7 @@ const Navbar: React.FC = () => {
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem disabled>
                       <User className="w-4 h-4 mr-2" />
-                      {userType === 'recruiter' ? recruiterProfile?.companyName : studentProfile?.institution}
+                      {userType === 'recruiter' ? recruiterProfile?.company_name : studentProfile?.institution}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout} className="text-destructive">

@@ -8,10 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const StudentRegister: React.FC = () => {
   const navigate = useNavigate();
-  const { loginAsStudent } = useAuth();
+  const { signUp } = useAuth();
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -27,26 +28,61 @@ const StudentRegister: React.FC = () => {
       toast({ title: 'Please fill in all required fields', variant: 'destructive' });
       return;
     }
+    if (formData.password.length < 8) {
+      toast({ title: 'Password must be at least 8 characters', variant: 'destructive' });
+      return;
+    }
     if (formData.password !== formData.confirmPassword) {
       toast({ title: 'Passwords do not match', variant: 'destructive' });
       return;
     }
     setIsLoading(true);
-    setTimeout(() => {
-      loginAsStudent({
-        id: 'student-' + Date.now(),
+    try {
+      const { error } = await signUp(formData.email, formData.password);
+      if (error) {
+        toast({ title: error, variant: 'destructive' });
+        setIsLoading(false);
+        return;
+      }
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({ title: 'Please check your email to confirm your account, then log in.', description: 'A confirmation email has been sent.' });
+        navigate('/student/login');
+        setIsLoading(false);
+        return;
+      }
+
+      // Create student profile
+      const { error: profileError } = await supabase.from('students').insert({
+        user_id: user.id,
         name: formData.name,
         email: formData.email,
         institution: formData.institution,
         degree: formData.degree,
         branch: formData.branch,
-        graduationYear: parseInt(formData.graduationYear) || 2025,
-        profileComplete: false,
+        graduation_year: parseInt(formData.graduationYear) || 2025,
       });
+
+      if (profileError) {
+        toast({ title: 'Error creating profile', description: profileError.message, variant: 'destructive' });
+        setIsLoading(false);
+        return;
+      }
+
+      // Create empty student_profiles entry for extracted data
+      const { data: studentRow } = await supabase.from('students').select('id').eq('user_id', user.id).single();
+      if (studentRow) {
+        await supabase.from('student_profiles').insert({ student_id: studentRow.id });
+      }
+
       toast({ title: 'Registration successful!' });
-      navigate('/student/dashboard');
+      setTimeout(() => navigate('/student/profile'), 500);
+    } catch (err) {
+      toast({ title: 'Registration failed', variant: 'destructive' });
+    } finally {
       setIsLoading(false);
-    }, 500);
+    }
   };
 
   const updateField = (field: string, value: string) => {
