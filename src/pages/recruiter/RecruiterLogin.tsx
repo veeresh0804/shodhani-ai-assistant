@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 
 const RecruiterLogin: React.FC = () => {
   const navigate = useNavigate();
-  const { loginAsRecruiter } = useAuth();
+  const { signIn } = useAuth();
   const { toast } = useToast();
 
   const [email, setEmail] = useState('');
@@ -25,31 +25,15 @@ const RecruiterLogin: React.FC = () => {
       return;
     }
     setIsLoading(true);
-    // Demo: just log in with email
-    setTimeout(() => {
-      loginAsRecruiter({
-        id: 'recruiter-' + Date.now(),
-        companyName: 'Your Company',
-        recruiterName: email.split('@')[0],
-        email,
-        designation: 'Hiring Manager',
-      });
-      toast({ title: 'Welcome back!' });
-      navigate('/recruiter/dashboard');
+    const { error } = await signIn(email, password);
+    if (error) {
+      toast({ title: error, variant: 'destructive' });
       setIsLoading(false);
-    }, 500);
-  };
-
-  const handleDemoLogin = () => {
-    loginAsRecruiter({
-      id: 'recruiter-demo',
-      companyName: 'TechCorp AI',
-      recruiterName: 'Demo Recruiter',
-      email: 'demo@techcorp.com',
-      designation: 'Hiring Manager',
-    });
-    toast({ title: 'Demo mode activated!' });
+      return;
+    }
+    toast({ title: 'Welcome back!' });
     navigate('/recruiter/dashboard');
+    setIsLoading(false);
   };
 
   return (
@@ -90,15 +74,6 @@ const RecruiterLogin: React.FC = () => {
 
               <Button type="submit" className="btn-primary w-full" disabled={isLoading}>
                 {isLoading ? <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <>Sign In <ArrowRight className="w-4 h-4 ml-2" /></>}
-              </Button>
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
-                <div className="relative flex justify-center"><span className="bg-card px-4 text-sm text-muted-foreground">or</span></div>
-              </div>
-
-              <Button type="button" variant="outline" className="w-full" onClick={handleDemoLogin}>
-                Try Demo Mode
               </Button>
             </CardContent>
           </form>

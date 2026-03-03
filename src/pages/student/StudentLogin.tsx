@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 
 const StudentLogin: React.FC = () => {
   const navigate = useNavigate();
-  const { loginAsStudent } = useAuth();
+  const { signIn } = useAuth();
   const { toast } = useToast();
 
   const [email, setEmail] = useState('');
@@ -25,36 +25,15 @@ const StudentLogin: React.FC = () => {
       return;
     }
     setIsLoading(true);
-    setTimeout(() => {
-      loginAsStudent({
-        id: 'student-' + Date.now(),
-        name: email.split('@')[0],
-        email,
-        institution: 'University',
-        degree: 'B.Tech',
-        branch: 'Computer Science',
-        graduationYear: 2025,
-        profileComplete: false,
-      });
-      toast({ title: 'Welcome back!', description: 'You have successfully logged in.' });
-      navigate('/student/dashboard');
+    const { error } = await signIn(email, password);
+    if (error) {
+      toast({ title: error, variant: 'destructive' });
       setIsLoading(false);
-    }, 500);
-  };
-
-  const handleDemoLogin = () => {
-    loginAsStudent({
-      id: 'student-demo',
-      name: 'Demo Student',
-      email: 'demo@university.edu',
-      institution: 'Demo University',
-      degree: 'B.Tech',
-      branch: 'Computer Science',
-      graduationYear: 2025,
-      profileComplete: false,
-    });
-    toast({ title: 'Demo mode activated!', description: 'Exploring as a demo student.' });
+      return;
+    }
+    toast({ title: 'Welcome back!' });
     navigate('/student/dashboard');
+    setIsLoading(false);
   };
 
   return (
@@ -95,15 +74,6 @@ const StudentLogin: React.FC = () => {
 
               <Button type="submit" className="btn-secondary w-full" disabled={isLoading}>
                 {isLoading ? <div className="w-5 h-5 border-2 border-foreground/30 border-t-foreground rounded-full animate-spin" /> : <>Sign In <ArrowRight className="w-4 h-4 ml-2" /></>}
-              </Button>
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
-                <div className="relative flex justify-center"><span className="bg-card px-4 text-sm text-muted-foreground">or</span></div>
-              </div>
-
-              <Button type="button" variant="outline" className="w-full" onClick={handleDemoLogin}>
-                Try Demo Mode
               </Button>
             </CardContent>
           </form>

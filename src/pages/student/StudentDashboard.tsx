@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Briefcase, FileSearch, CheckCircle2, Clock, TrendingUp,
@@ -9,17 +9,41 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { Progress } from '@/components/ui/progress';
-
-const DEMO_JOBS = [
-  { id: '1', title: 'Senior Full Stack Developer', company: 'TechCorp AI', location: 'Bangalore', type: 'Full-time', skills: ['React', 'Node.js', 'TypeScript'] },
-  { id: '2', title: 'ML Engineer', company: 'DataVerse Inc.', location: 'Remote', type: 'Full-time', skills: ['Python', 'TensorFlow', 'PyTorch'] },
-  { id: '3', title: 'Frontend Developer', company: 'DesignLab', location: 'Hyderabad', type: 'Full-time', skills: ['React', 'CSS', 'JavaScript'] },
-  { id: '4', title: 'Backend Developer', company: 'CloudNine', location: 'Mumbai', type: 'Contract', skills: ['Java', 'Spring Boot', 'AWS'] },
-];
+import { supabase } from '@/integrations/supabase/client';
 
 const StudentDashboard: React.FC = () => {
   const { studentProfile } = useAuth();
-  const profileStrength = studentProfile?.profileComplete ? 85 : 35;
+  const profileStrength = studentProfile?.profile_complete ? 85 : 35;
+
+  const [stats, setStats] = useState({ total: 0, pending: 0, shortlisted: 0 });
+  const [recentJobs, setRecentJobs] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Fetch application stats
+    if (studentProfile?.id) {
+      supabase
+        .from('applications')
+        .select('status')
+        .eq('student_id', studentProfile.id)
+        .then(({ data }) => {
+          const apps = data || [];
+          setStats({
+            total: apps.length,
+            pending: apps.filter(a => a.status === 'pending' || a.status === 'under_review').length,
+            shortlisted: apps.filter(a => a.status === 'shortlisted').length,
+          });
+        });
+    }
+
+    // Fetch recent jobs
+    supabase
+      .from('jobs')
+      .select('id, title, location, job_type, required_skills, recruiters(company_name)')
+      .eq('status', 'active')
+      .order('created_at', { ascending: false })
+      .limit(4)
+      .then(({ data }) => setRecentJobs((data as any) || []));
+  }, [studentProfile?.id]);
 
   return (
     <div className="min-h-screen pt-20 pb-12">
@@ -46,7 +70,7 @@ const StudentDashboard: React.FC = () => {
                   <FileSearch className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">0</p>
+                  <p className="text-2xl font-bold">{stats.total}</p>
                   <p className="text-sm text-muted-foreground">Applications</p>
                 </div>
               </div>
@@ -59,7 +83,7 @@ const StudentDashboard: React.FC = () => {
                   <Clock className="w-6 h-6 text-warning" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">0</p>
+                  <p className="text-2xl font-bold">{stats.pending}</p>
                   <p className="text-sm text-muted-foreground">Pending</p>
                 </div>
               </div>
@@ -72,7 +96,7 @@ const StudentDashboard: React.FC = () => {
                   <CheckCircle2 className="w-6 h-6 text-success" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">0</p>
+                  <p className="text-2xl font-bold">{stats.shortlisted}</p>
                   <p className="text-sm text-muted-foreground">Shortlisted</p>
                 </div>
               </div>
@@ -86,7 +110,7 @@ const StudentDashboard: React.FC = () => {
                   <span className="text-sm font-bold">{profileStrength}%</span>
                 </div>
                 <Progress value={profileStrength} className="h-2" />
-                {!studentProfile?.profileComplete && (
+                {!studentProfile?.profile_complete && (
                   <Link to="/student/profile" className="text-xs text-primary hover:underline flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" /> Complete your profile
                   </Link>
@@ -142,27 +166,31 @@ const StudentDashboard: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {DEMO_JOBS.map((job) => (
-                <div key={job.id} className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/30 transition-colors">
-                  <div className="space-y-1">
-                    <h3 className="font-semibold">{job.title}</h3>
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1"><Building2 className="w-3 h-3" />{job.company}</span>
-                      <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{job.location}</span>
+            {recentJobs.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">No jobs available yet.</div>
+            ) : (
+              <div className="space-y-4">
+                {recentJobs.map((job: any) => (
+                  <div key={job.id} className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/30 transition-colors">
+                    <div className="space-y-1">
+                      <h3 className="font-semibold">{job.title}</h3>
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1"><Building2 className="w-3 h-3" />{job.recruiters?.company_name || 'Company'}</span>
+                        <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{job.location}</span>
+                      </div>
+                      <div className="flex gap-2 mt-2">
+                        {job.required_skills?.slice(0, 3).map((skill: string) => (
+                          <Badge key={skill} variant="secondary" className="text-xs">{skill}</Badge>
+                        ))}
+                      </div>
                     </div>
-                    <div className="flex gap-2 mt-2">
-                      {job.skills.map((skill) => (
-                        <Badge key={skill} variant="secondary" className="text-xs">{skill}</Badge>
-                      ))}
-                    </div>
+                    <Link to={`/student/jobs/${job.id}`}>
+                      <Button variant="outline" size="sm">View</Button>
+                    </Link>
                   </div>
-                  <Link to={`/student/jobs/${job.id}`}>
-                    <Button variant="outline" size="sm">View</Button>
-                  </Link>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -1,104 +1,156 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import type { User } from '@supabase/supabase-js';
 
 export type UserType = 'recruiter' | 'student' | null;
 
 export interface RecruiterProfile {
   id: string;
-  companyName: string;
-  recruiterName: string;
+  user_id: string;
+  company_name: string;
+  recruiter_name: string;
   email: string;
   designation?: string;
-  companyWebsite?: string;
+  company_website?: string;
 }
 
 export interface StudentProfile {
   id: string;
+  user_id: string;
   name: string;
   email: string;
   institution: string;
   degree: string;
   branch: string;
-  graduationYear: number;
-  profileComplete: boolean;
-  platformLinks?: {
-    leetcode?: string;
-    github?: string;
-    linkedin?: string;
-  };
+  graduation_year: number;
+  profile_complete: boolean;
 }
 
 interface AuthContextType {
+  user: User | null;
   userType: UserType;
   isAuthenticated: boolean;
   isLoading: boolean;
   recruiterProfile: RecruiterProfile | null;
   studentProfile: StudentProfile | null;
-  loginAsRecruiter: (profile: RecruiterProfile) => void;
-  loginAsStudent: (profile: StudentProfile) => void;
+  signUp: (email: string, password: string) => Promise<{ error: string | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   logout: () => Promise<void>;
-  updateStudentProfile: (updates: Partial<StudentProfile>) => void;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [userType, setUserType] = useState<UserType>(() => {
-    return localStorage.getItem('demo_user_type') as UserType;
-  });
-  const [recruiterProfile, setRecruiterProfile] = useState<RecruiterProfile | null>(() => {
-    const stored = localStorage.getItem('demo_recruiter_profile');
-    return stored ? JSON.parse(stored) : null;
-  });
-  const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(() => {
-    const stored = localStorage.getItem('demo_student_profile');
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [userType, setUserType] = useState<UserType>(null);
+  const [recruiterProfile, setRecruiterProfile] = useState<RecruiterProfile | null>(null);
+  const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const loginAsRecruiter = useCallback((profile: RecruiterProfile) => {
-    localStorage.setItem('demo_user_type', 'recruiter');
-    localStorage.setItem('demo_recruiter_profile', JSON.stringify(profile));
-    setUserType('recruiter');
-    setRecruiterProfile(profile);
-    setStudentProfile(null);
-  }, []);
+  const fetchProfile = useCallback(async (userId: string) => {
+    // Check recruiter profile
+    const { data: recruiter } = await supabase
+      .from('recruiters')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
 
-  const loginAsStudent = useCallback((profile: StudentProfile) => {
-    localStorage.setItem('demo_user_type', 'student');
-    localStorage.setItem('demo_student_profile', JSON.stringify(profile));
-    setUserType('student');
-    setStudentProfile(profile);
-    setRecruiterProfile(null);
-  }, []);
+    if (recruiter) {
+      setUserType('recruiter');
+      setRecruiterProfile(recruiter as RecruiterProfile);
+      setStudentProfile(null);
+      return;
+    }
 
-  const logout = useCallback(async () => {
-    localStorage.removeItem('demo_user_type');
-    localStorage.removeItem('demo_recruiter_profile');
-    localStorage.removeItem('demo_student_profile');
+    // Check student profile
+    const { data: student } = await supabase
+      .from('students')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (student) {
+      setUserType('student');
+      setStudentProfile(student as StudentProfile);
+      setRecruiterProfile(null);
+      return;
+    }
+
+    // No profile yet (just signed up, profile will be created on register)
     setUserType(null);
     setRecruiterProfile(null);
     setStudentProfile(null);
   }, []);
 
-  const updateStudentProfile = useCallback((updates: Partial<StudentProfile>) => {
-    setStudentProfile(prev => {
-      if (!prev) return null;
-      const updated = { ...prev, ...updates };
-      localStorage.setItem('demo_student_profile', JSON.stringify(updated));
-      return updated;
+  const refreshProfile = useCallback(async () => {
+    if (user) {
+      await fetchProfile(user.id);
+    }
+  }, [user, fetchProfile]);
+
+  useEffect(() => {
+    // Set up auth listener BEFORE checking session
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        setUser(session.user);
+        // Use setTimeout to avoid potential deadlock with Supabase client
+        setTimeout(() => fetchProfile(session.user.id), 0);
+      } else {
+        setUser(null);
+        setUserType(null);
+        setRecruiterProfile(null);
+        setStudentProfile(null);
+      }
+      setIsLoading(false);
     });
+
+    // Check initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setUser(session.user);
+        fetchProfile(session.user.id);
+      }
+      setIsLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [fetchProfile]);
+
+  const signUp = useCallback(async (email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: window.location.origin },
+    });
+    return { error: error?.message || null };
+  }, []);
+
+  const signIn = useCallback(async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    return { error: error?.message || null };
+  }, []);
+
+  const logout = useCallback(async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setUserType(null);
+    setRecruiterProfile(null);
+    setStudentProfile(null);
   }, []);
 
   return (
     <AuthContext.Provider value={{
+      user,
       userType,
-      isAuthenticated: userType !== null,
-      isLoading: false,
+      isAuthenticated: !!user && userType !== null,
+      isLoading,
       recruiterProfile,
       studentProfile,
-      loginAsRecruiter,
-      loginAsStudent,
+      signUp,
+      signIn,
       logout,
-      updateStudentProfile,
+      refreshProfile,
     }}>
       {children}
     </AuthContext.Provider>

@@ -1,19 +1,53 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Briefcase, Users, Clock, Building2, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
-const DEMO_JOBS = [
-  { id: '1', title: 'Senior Full Stack Developer', location: 'Bangalore', jobType: 'Full-time', status: 'active', applications: 24, created: '2 days ago' },
-  { id: '2', title: 'ML Engineer', location: 'Remote', jobType: 'Full-time', status: 'active', applications: 18, created: '5 days ago' },
-  { id: '3', title: 'Frontend Developer (React)', location: 'Hyderabad', jobType: 'Full-time', status: 'closed', applications: 42, created: '2 weeks ago' },
-];
+interface Job {
+  id: string;
+  title: string;
+  location: string;
+  job_type: string;
+  status: string;
+  applications_count: number;
+  created_at: string;
+}
 
 const RecruiterDashboard: React.FC = () => {
   const { recruiterProfile } = useAuth();
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!recruiterProfile?.id) return;
+    const fetchJobs = async () => {
+      const { data } = await supabase
+        .from('jobs')
+        .select('id, title, location, job_type, status, applications_count, created_at')
+        .eq('recruiter_id', recruiterProfile.id)
+        .order('created_at', { ascending: false });
+      setJobs(data || []);
+      setIsLoading(false);
+    };
+    fetchJobs();
+  }, [recruiterProfile?.id]);
+
+  const totalApps = jobs.reduce((sum, j) => sum + j.applications_count, 0);
+  const activeJobs = jobs.filter(j => j.status === 'active').length;
+
+  const timeAgo = (dateStr: string) => {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const days = Math.floor(diff / 86400000);
+    if (days === 0) return 'Today';
+    if (days === 1) return '1 day ago';
+    if (days < 7) return `${days} days ago`;
+    if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
+    return `${Math.floor(days / 30)} months ago`;
+  };
 
   return (
     <div className="min-h-screen pt-20 pb-12">
@@ -21,10 +55,10 @@ const RecruiterDashboard: React.FC = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Welcome back, {recruiterProfile?.recruiterName || 'Recruiter'}!</h1>
+            <h1 className="text-3xl font-bold">Welcome back, {recruiterProfile?.recruiter_name || 'Recruiter'}!</h1>
             <p className="text-muted-foreground mt-1">
               <Building2 className="w-4 h-4 inline mr-1" />
-              {recruiterProfile?.companyName || 'Your Company'}
+              {recruiterProfile?.company_name || 'Your Company'}
             </p>
           </div>
           <Link to="/recruiter/post-job">
@@ -43,7 +77,7 @@ const RecruiterDashboard: React.FC = () => {
                   <Briefcase className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{DEMO_JOBS.length}</p>
+                  <p className="text-2xl font-bold">{jobs.length}</p>
                   <p className="text-sm text-muted-foreground">Total Jobs</p>
                 </div>
               </div>
@@ -56,7 +90,7 @@ const RecruiterDashboard: React.FC = () => {
                   <Users className="w-6 h-6 text-success" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{DEMO_JOBS.reduce((sum, j) => sum + j.applications, 0)}</p>
+                  <p className="text-2xl font-bold">{totalApps}</p>
                   <p className="text-sm text-muted-foreground">Total Applications</p>
                 </div>
               </div>
@@ -69,7 +103,7 @@ const RecruiterDashboard: React.FC = () => {
                   <Clock className="w-6 h-6 text-warning" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{DEMO_JOBS.filter(j => j.status === 'active').length}</p>
+                  <p className="text-2xl font-bold">{activeJobs}</p>
                   <p className="text-sm text-muted-foreground">Active Jobs</p>
                 </div>
               </div>
@@ -86,29 +120,37 @@ const RecruiterDashboard: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {DEMO_JOBS.map((job) => (
-                <div key={job.id} className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/30 transition-colors">
-                  <div className="space-y-1">
-                    <h3 className="font-semibold">{job.title}</h3>
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                      <span>{job.location}</span>
-                      <span>•</span>
-                      <span>{job.jobType}</span>
-                      <span>•</span>
-                      <span>{job.created}</span>
+            {isLoading ? (
+              <div className="text-center py-8 text-muted-foreground">Loading...</div>
+            ) : jobs.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No jobs posted yet. Click "Post New Job" to get started!
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {jobs.map((job) => (
+                  <div key={job.id} className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/30 transition-colors">
+                    <div className="space-y-1">
+                      <h3 className="font-semibold">{job.title}</h3>
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                        <span>{job.location}</span>
+                        <span>•</span>
+                        <span>{job.job_type}</span>
+                        <span>•</span>
+                        <span>{timeAgo(job.created_at)}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Badge className={job.status === 'active' ? 'badge-success' : 'badge-muted'}>
+                        {job.status}
+                      </Badge>
+                      <span className="text-sm text-muted-foreground">{job.applications_count} applicants</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Badge className={job.status === 'active' ? 'badge-success' : 'badge-muted'}>
-                      {job.status}
-                    </Badge>
-                    <span className="text-sm text-muted-foreground">{job.applications} applicants</span>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -7,10 +7,11 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const RecruiterRegister: React.FC = () => {
   const navigate = useNavigate();
-  const { loginAsRecruiter } = useAuth();
+  const { signUp } = useAuth();
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -26,24 +27,56 @@ const RecruiterRegister: React.FC = () => {
       toast({ title: 'Please fill in all required fields', variant: 'destructive' });
       return;
     }
+    if (formData.password.length < 8) {
+      toast({ title: 'Password must be at least 8 characters', variant: 'destructive' });
+      return;
+    }
     if (formData.password !== formData.confirmPassword) {
       toast({ title: 'Passwords do not match', variant: 'destructive' });
       return;
     }
     setIsLoading(true);
-    setTimeout(() => {
-      loginAsRecruiter({
-        id: 'recruiter-' + Date.now(),
-        companyName: formData.companyName,
-        recruiterName: formData.recruiterName,
+    try {
+      const { error } = await signUp(formData.email, formData.password);
+      if (error) {
+        toast({ title: error, variant: 'destructive' });
+        setIsLoading(false);
+        return;
+      }
+
+      // Get the user from the current session
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({ title: 'Please check your email to confirm your account, then log in.', description: 'A confirmation email has been sent.' });
+        navigate('/recruiter/login');
+        setIsLoading(false);
+        return;
+      }
+
+      // Create recruiter profile
+      const { error: profileError } = await supabase.from('recruiters').insert({
+        user_id: user.id,
+        company_name: formData.companyName,
+        recruiter_name: formData.recruiterName,
         email: formData.email,
-        designation: formData.designation,
-        companyWebsite: formData.companyWebsite,
+        designation: formData.designation || null,
+        company_website: formData.companyWebsite || null,
       });
+
+      if (profileError) {
+        toast({ title: 'Error creating profile', description: profileError.message, variant: 'destructive' });
+        setIsLoading(false);
+        return;
+      }
+
       toast({ title: 'Registration successful!' });
-      navigate('/recruiter/dashboard');
+      // Small delay to let auth state update
+      setTimeout(() => navigate('/recruiter/dashboard'), 500);
+    } catch (err) {
+      toast({ title: 'Registration failed', variant: 'destructive' });
+    } finally {
       setIsLoading(false);
-    }, 500);
+    }
   };
 
   const updateField = (field: string, value: string) => {

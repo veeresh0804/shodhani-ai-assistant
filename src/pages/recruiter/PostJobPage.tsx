@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const PostJobPage: React.FC = () => {
   const navigate = useNavigate();
@@ -17,11 +18,12 @@ const PostJobPage: React.FC = () => {
   const { recruiterProfile } = useAuth();
 
   const [currentStep, setCurrentStep] = useState(1);
+  const [isPosting, setIsPosting] = useState(false);
   const [formData, setFormData] = useState({
     title: '', department: '', location: '', jobType: '',
     experienceRequired: '', description: '',
     requiredSkills: [] as string[], preferredSkills: [] as string[],
-    salaryRange: '', deadline: '', roleType: 'SDE',
+    salaryRange: '', deadline: '',
   });
   const [newSkill, setNewSkill] = useState('');
   const [skillType, setSkillType] = useState<'required' | 'preferred'>('required');
@@ -40,13 +42,38 @@ const PostJobPage: React.FC = () => {
     setFormData(prev => ({ ...prev, [key]: prev[key].filter(s => s !== skill) }));
   };
 
-  const handlePost = () => {
-    if (!formData.title || !formData.description) {
+  const handlePost = async () => {
+    if (!formData.title || !formData.description || !formData.location || !formData.jobType) {
       toast({ title: 'Please fill in required fields', variant: 'destructive' });
       return;
     }
-    toast({ title: 'Job posted successfully!', description: 'Your job is now live.' });
-    navigate('/recruiter/dashboard');
+    if (!recruiterProfile?.id) {
+      toast({ title: 'Recruiter profile not found', variant: 'destructive' });
+      return;
+    }
+
+    setIsPosting(true);
+    const { error } = await supabase.from('jobs').insert({
+      recruiter_id: recruiterProfile.id,
+      title: formData.title,
+      description: formData.description,
+      department: formData.department || null,
+      location: formData.location,
+      job_type: formData.jobType,
+      experience_required: formData.experienceRequired || null,
+      required_skills: formData.requiredSkills,
+      preferred_skills: formData.preferredSkills,
+      salary_range: formData.salaryRange || null,
+      deadline: formData.deadline || null,
+    });
+
+    if (error) {
+      toast({ title: 'Error posting job', description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: 'Job posted successfully!', description: 'Your job is now live.' });
+      navigate('/recruiter/dashboard');
+    }
+    setIsPosting(false);
   };
 
   const steps = [
@@ -89,19 +116,19 @@ const PostJobPage: React.FC = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Location</Label>
+                    <Label>Location *</Label>
                     <Input placeholder="e.g. Bangalore" value={formData.location}
                       onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))} />
                   </div>
                   <div className="space-y-2">
-                    <Label>Job Type</Label>
+                    <Label>Job Type *</Label>
                     <Select onValueChange={(v) => setFormData(prev => ({ ...prev, jobType: v }))}>
                       <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="full-time">Full-time</SelectItem>
-                        <SelectItem value="part-time">Part-time</SelectItem>
-                        <SelectItem value="contract">Contract</SelectItem>
-                        <SelectItem value="internship">Internship</SelectItem>
+                        <SelectItem value="Full-time">Full-time</SelectItem>
+                        <SelectItem value="Part-time">Part-time</SelectItem>
+                        <SelectItem value="Contract">Contract</SelectItem>
+                        <SelectItem value="Internship">Internship</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -208,8 +235,8 @@ const PostJobPage: React.FC = () => {
                   <Button variant="outline" onClick={() => setCurrentStep(2)}>
                     <ArrowLeft className="w-4 h-4 mr-2" /> Back
                   </Button>
-                  <Button className="btn-primary" onClick={handlePost}>
-                    Post Job <ArrowRight className="w-4 h-4 ml-2" />
+                  <Button className="btn-primary" onClick={handlePost} disabled={isPosting}>
+                    {isPosting ? 'Posting...' : 'Post Job'} <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
               </CardContent>
