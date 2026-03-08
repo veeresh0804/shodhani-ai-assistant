@@ -66,6 +66,7 @@ const CandidateRankingPage: React.FC = () => {
   const [isRanking, setIsRanking] = useState(false);
   const [hasRanked, setHasRanked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
+  const [expandedResume, setExpandedResume] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!jobId || !recruiterProfile?.id) return;
