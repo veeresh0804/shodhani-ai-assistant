@@ -138,7 +138,7 @@ const StudentDashboard: React.FC = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Link to="/student/profile">
             <Card className="glass-card-hover cursor-pointer">
               <CardContent className="pt-6 flex items-center gap-4">
@@ -146,8 +146,22 @@ const StudentDashboard: React.FC = () => {
                   <TrendingUp className="w-6 h-6 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold">Set Up Your Profile</h3>
-                  <p className="text-sm text-muted-foreground">Add your LeetCode, GitHub, LinkedIn links</p>
+                  <h3 className="font-semibold">Set Up Profile</h3>
+                  <p className="text-sm text-muted-foreground">Add your platform links</p>
+                </div>
+                <ArrowRight className="w-5 h-5 text-muted-foreground" />
+              </CardContent>
+            </Card>
+          </Link>
+          <Link to="/student/career-path">
+            <Card className="glass-card-hover cursor-pointer">
+              <CardContent className="pt-6 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center">
+                  <Star className="w-6 h-6 text-success" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold">Career Path</h3>
+                  <p className="text-sm text-muted-foreground">AI-powered career roadmap</p>
                 </div>
                 <ArrowRight className="w-5 h-5 text-muted-foreground" />
               </CardContent>
@@ -156,12 +170,12 @@ const StudentDashboard: React.FC = () => {
           <Link to="/student/jobs">
             <Card className="glass-card-hover cursor-pointer">
               <CardContent className="pt-6 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center">
-                  <Star className="w-6 h-6 text-success" />
+                <div className="w-12 h-12 rounded-xl bg-warning/20 flex items-center justify-center">
+                  <Briefcase className="w-6 h-6 text-warning" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold">Check Job Eligibility</h3>
-                  <p className="text-sm text-muted-foreground">See if your skills match open positions</p>
+                  <h3 className="font-semibold">Check Eligibility</h3>
+                  <p className="text-sm text-muted-foreground">Match skills to jobs</p>
                 </div>
                 <ArrowRight className="w-5 h-5 text-muted-foreground" />
               </CardContent>

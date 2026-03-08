@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Briefcase, FileText, Target, X, Plus } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Briefcase, FileText, Target, X, Plus, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,6 +19,8 @@ const PostJobPage: React.FC = () => {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isPosting, setIsPosting] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [briefDescription, setBriefDescription] = useState('');
   const [formData, setFormData] = useState({
     title: '', department: '', location: '', jobType: '',
     experienceRequired: '', description: '',
@@ -27,6 +29,43 @@ const PostJobPage: React.FC = () => {
   });
   const [newSkill, setNewSkill] = useState('');
   const [skillType, setSkillType] = useState<'required' | 'preferred'>('required');
+
+  const handleGenerateJD = async () => {
+    if (!briefDescription.trim()) {
+      toast({ title: 'Enter a brief description', variant: 'destructive' });
+      return;
+    }
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-jd', {
+        body: {
+          title: formData.title,
+          job_type: formData.jobType,
+          location: formData.location,
+          experience: formData.experienceRequired,
+          brief_description: briefDescription,
+        },
+      });
+      if (error) throw error;
+      if (data?.error) {
+        toast({ title: 'Generation failed', description: data.error, variant: 'destructive' });
+        return;
+      }
+      setFormData(prev => ({
+        ...prev,
+        title: prev.title || data.suggested_title || '',
+        description: data.description || '',
+        requiredSkills: data.required_skills || [],
+        preferredSkills: data.preferred_skills || [],
+        salaryRange: prev.salaryRange || data.salary_suggestion || '',
+      }));
+      toast({ title: 'JD generated!', description: 'Review and edit the generated description.' });
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message || 'Failed to generate', variant: 'destructive' });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const addSkill = () => {
     if (!newSkill.trim()) return;
@@ -158,9 +197,25 @@ const PostJobPage: React.FC = () => {
             <>
               <CardHeader><CardTitle>Job Description</CardTitle></CardHeader>
               <CardContent className="space-y-4">
+                {/* AI Generator */}
+                <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                  <Label className="flex items-center gap-2 text-sm font-medium">
+                    <Sparkles className="w-4 h-4 text-primary" /> AI Job Description Generator
+                  </Label>
+                  <Textarea
+                    placeholder="Briefly describe what you're looking for, e.g. 'Need a backend engineer to build scalable REST APIs with Python and PostgreSQL...'"
+                    className="min-h-[80px]"
+                    value={briefDescription}
+                    onChange={(e) => setBriefDescription(e.target.value)}
+                  />
+                  <Button variant="outline" className="gap-2" onClick={handleGenerateJD} disabled={isGenerating}>
+                    {isGenerating ? <><Loader2 className="w-4 h-4 animate-spin" /> Generating...</> : <><Sparkles className="w-4 h-4" /> Generate Full JD</>}
+                  </Button>
+                </div>
+
                 <div className="space-y-2">
                   <Label>Description *</Label>
-                  <Textarea placeholder="Paste the full job description here..." className="min-h-[200px]"
+                  <Textarea placeholder="Paste or edit the full job description here..." className="min-h-[200px]"
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} />
                 </div>

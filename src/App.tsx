@@ -16,6 +16,7 @@ import PostJobPage from "./pages/recruiter/PostJobPage";
 import CandidateRankingPage from "./pages/recruiter/CandidateRankingPage";
 import AnalyticsDashboard from "./pages/recruiter/AnalyticsDashboard";
 import InterviewSchedulePage from "./pages/recruiter/InterviewSchedulePage";
+import TalentDiscoveryPage from "./pages/recruiter/TalentDiscoveryPage";
 
 import StudentLogin from "./pages/student/StudentLogin";
 import StudentRegister from "./pages/student/StudentRegister";
@@ -27,6 +28,7 @@ import StudentProfilePage from "./pages/student/StudentProfilePage";
 import EligibilityCheckerPage from "./pages/student/EligibilityCheckerPage";
 import InterviewsPage from "./pages/student/InterviewsPage";
 import NotificationsPage from "./pages/student/NotificationsPage";
+import CareerPathPage from "./pages/student/CareerPathPage";
 
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -53,6 +55,7 @@ const App = () => (
               <Route path="/recruiter/jobs/:jobId/candidates" element={<CandidateRankingPage />} />
               <Route path="/recruiter/analytics" element={<AnalyticsDashboard />} />
               <Route path="/recruiter/interviews" element={<InterviewSchedulePage />} />
+              <Route path="/recruiter/talent" element={<TalentDiscoveryPage />} />
 
               {/* Student Routes */}
               <Route path="/student/login" element={<StudentLogin />} />
@@ -65,6 +68,7 @@ const App = () => (
               <Route path="/student/profile" element={<StudentProfilePage />} />
               <Route path="/student/interviews" element={<InterviewsPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
+              <Route path="/student/career-path" element={<CareerPathPage />} />
 
               {/* Admin Routes */}
               <Route path="/admin/login" element={<AdminLogin />} />
