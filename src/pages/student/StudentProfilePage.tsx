@@ -48,23 +48,26 @@ const StudentProfilePage: React.FC = () => {
     if (!studentProfile?.id) return;
     supabase
       .from('student_profiles')
-      .select('leetcode_url, github_url, linkedin_url, gemini_analysis, github_data, leetcode_data')
+      .select('leetcode_url, github_url, linkedin_url, gemini_analysis, github_data, leetcode_data, resume_skills')
       .eq('student_id', studentProfile.id)
       .maybeSingle()
       .then(({ data }) => {
         if (data) {
           setLinks({
-            leetcode: data.leetcode_url || '',
-            github: data.github_url || '',
-            linkedin: data.linkedin_url || '',
+            leetcode: (data as any).leetcode_url || '',
+            github: (data as any).github_url || '',
+            linkedin: (data as any).linkedin_url || '',
           });
-          if (data.gemini_analysis && Object.keys(data.gemini_analysis).length > 0) {
-            setExistingAnalysis(data.gemini_analysis as unknown as ProfileAnalysis);
+          if ((data as any).gemini_analysis && Object.keys((data as any).gemini_analysis).length > 0) {
+            setExistingAnalysis((data as any).gemini_analysis as unknown as ProfileAnalysis);
             setExtracted({
-              github_data: data.github_data,
-              leetcode_data: data.leetcode_data,
-              analysis: data.gemini_analysis as unknown as ProfileAnalysis,
+              github_data: (data as any).github_data,
+              leetcode_data: (data as any).leetcode_data,
+              analysis: (data as any).gemini_analysis as unknown as ProfileAnalysis,
             });
+          }
+          if ((data as any).resume_skills && Object.keys((data as any).resume_skills).length > 0) {
+            setResumeSkills((data as any).resume_skills);
           }
         }
       });
