@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Briefcase, Users, Clock, Building2, ChevronRight, Sparkles, BarChart3, Calendar, ShieldCheck, Code2, Kanban, Radar } from 'lucide-react';
+import { Plus, Briefcase, Users, Clock, Building2, ChevronRight, Sparkles, BarChart3, Calendar, ShieldCheck, Code2, Kanban, Radar, ShieldAlert, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -80,6 +80,16 @@ const RecruiterDashboard: React.FC = () => {
             <Link to="/recruiter/talent-radar">
               <Button variant="outline" size="sm" className="gap-1.5">
                 <Radar className="w-4 h-4" /> Radar
+              </Button>
+            </Link>
+            <Link to="/recruiter/bias-detector">
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <ShieldAlert className="w-4 h-4" /> Bias
+              </Button>
+            </Link>
+            <Link to="/recruiter/agent">
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <Bot className="w-4 h-4" /> AI Agent
               </Button>
             </Link>
             <Link to="/recruiter/post-job">

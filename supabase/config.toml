@@ -23,3 +23,15 @@ verify_jwt = false
 
 [functions.project-score]
 verify_jwt = false
+
+[functions.bias-detect]
+verify_jwt = false
+
+[functions.portfolio-build]
+verify_jwt = false
+
+[functions.interview-sim]
+verify_jwt = false
+
+[functions.recruiter-agent]
+verify_jwt = false

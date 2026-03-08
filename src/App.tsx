@@ -21,6 +21,8 @@ import ResumeAuthenticityPage from "./pages/recruiter/ResumeAuthenticityPage";
 import ProjectScoringPage from "./pages/recruiter/ProjectScoringPage";
 import RecruiterCRMPage from "./pages/recruiter/RecruiterCRMPage";
 import TalentRadarPage from "./pages/recruiter/TalentRadarPage";
+import BiasDetectorPage from "./pages/recruiter/BiasDetectorPage";
+import RecruiterAgentPage from "./pages/recruiter/RecruiterAgentPage";
 
 import StudentLogin from "./pages/student/StudentLogin";
 import StudentRegister from "./pages/student/StudentRegister";
@@ -33,6 +35,8 @@ import EligibilityCheckerPage from "./pages/student/EligibilityCheckerPage";
 import InterviewsPage from "./pages/student/InterviewsPage";
 import NotificationsPage from "./pages/student/NotificationsPage";
 import CareerPathPage from "./pages/student/CareerPathPage";
+import PortfolioBuilderPage from "./pages/student/PortfolioBuilderPage";
+import InterviewSimPage from "./pages/student/InterviewSimPage";
 
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -64,6 +68,8 @@ const App = () => (
               <Route path="/recruiter/project-scoring" element={<ProjectScoringPage />} />
               <Route path="/recruiter/crm" element={<RecruiterCRMPage />} />
               <Route path="/recruiter/talent-radar" element={<TalentRadarPage />} />
+              <Route path="/recruiter/bias-detector" element={<BiasDetectorPage />} />
+              <Route path="/recruiter/agent" element={<RecruiterAgentPage />} />
 
               {/* Student Routes */}
               <Route path="/student/login" element={<StudentLogin />} />
@@ -77,6 +83,8 @@ const App = () => (
               <Route path="/student/interviews" element={<InterviewsPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/student/career-path" element={<CareerPathPage />} />
+              <Route path="/student/portfolio" element={<PortfolioBuilderPage />} />
+              <Route path="/student/interview-sim" element={<InterviewSimPage />} />
 
               {/* Admin Routes */}
               <Route path="/admin/login" element={<AdminLogin />} />
