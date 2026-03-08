@@ -51,6 +51,8 @@ interface JobInfo {
   id: string;
   title: string;
   applications_count: number;
+  required_skills: string[];
+  preferred_skills: string[] | null;
 }
 
 const CandidateRankingPage: React.FC = () => {
