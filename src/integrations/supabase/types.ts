@@ -62,6 +62,80 @@ export type Database = {
           },
         ]
       }
+      interviews: {
+        Row: {
+          application_id: string
+          created_at: string
+          duration_minutes: number
+          id: string
+          job_id: string
+          meeting_link: string | null
+          notes: string | null
+          recruiter_id: string
+          scheduled_at: string
+          status: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          job_id: string
+          meeting_link?: string | null
+          notes?: string | null
+          recruiter_id: string
+          scheduled_at: string
+          status?: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          job_id?: string
+          meeting_link?: string | null
+          notes?: string | null
+          recruiter_id?: string
+          scheduled_at?: string
+          status?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interviews_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interviews_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interviews_recruiter_id_fkey"
+            columns: ["recruiter_id"]
+            isOneToOne: false
+            referencedRelation: "recruiters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interviews_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jobs: {
         Row: {
           applications_count: number
@@ -237,6 +311,7 @@ export type Database = {
           name: string
           phone: string | null
           profile_complete: boolean
+          resume_url: string | null
           updated_at: string
           user_id: string
         }
@@ -251,6 +326,7 @@ export type Database = {
           name: string
           phone?: string | null
           profile_complete?: boolean
+          resume_url?: string | null
           updated_at?: string
           user_id: string
         }
@@ -265,6 +341,7 @@ export type Database = {
           name?: string
           phone?: string | null
           profile_complete?: boolean
+          resume_url?: string | null
           updated_at?: string
           user_id?: string
         }
