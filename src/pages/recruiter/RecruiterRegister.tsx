@@ -70,8 +70,8 @@ const RecruiterRegister: React.FC = () => {
       }
 
       toast({ title: 'Registration successful!' });
-      // Small delay to let auth state update
-      setTimeout(() => navigate('/recruiter/dashboard'), 500);
+      await refreshProfile();
+      setTimeout(() => navigate('/recruiter/dashboard'), 300);
     } catch (err) {
       toast({ title: 'Registration failed', variant: 'destructive' });
     } finally {

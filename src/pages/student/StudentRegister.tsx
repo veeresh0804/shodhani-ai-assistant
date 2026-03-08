@@ -77,7 +77,8 @@ const StudentRegister: React.FC = () => {
       }
 
       toast({ title: 'Registration successful!' });
-      setTimeout(() => navigate('/student/profile'), 500);
+      await refreshProfile();
+      setTimeout(() => navigate('/student/profile'), 300);
     } catch (err) {
       toast({ title: 'Registration failed', variant: 'destructive' });
     } finally {
