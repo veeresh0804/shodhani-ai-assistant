@@ -100,6 +100,28 @@ const StudentProfilePage: React.FC = () => {
     setIsUploading(false);
   };
 
+  const handleParseResume = async () => {
+    if (!resumeUrl) {
+      toast({ title: 'No resume', description: 'Please upload a resume first.', variant: 'destructive' });
+      return;
+    }
+    setIsParsing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('parse-resume', {});
+      if (error) throw error;
+      if (data?.error) {
+        toast({ title: 'Parsing failed', description: data.error, variant: 'destructive' });
+        return;
+      }
+      setResumeSkills(data.resume_skills);
+      toast({ title: 'Resume parsed!', description: 'AI has extracted skills from your resume.' });
+    } catch (e: any) {
+      console.error(e);
+      toast({ title: 'Error', description: e.message || 'Failed to parse resume', variant: 'destructive' });
+    } finally {
+      setIsParsing(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!studentProfile?.id) return;
