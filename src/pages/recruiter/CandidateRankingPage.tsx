@@ -161,6 +161,27 @@ const CandidateRankingPage: React.FC = () => {
     });
   };
 
+  const getSkillMatch = (candidate: RankedCandidate) => {
+    if (!job?.required_skills?.length || !candidate.resume_skills?.technical_skills?.length) return null;
+    const requiredLower = job.required_skills.map(s => s.toLowerCase().trim());
+    const candidateSkills = [
+      ...(candidate.resume_skills.technical_skills || []),
+      ...(candidate.resume_skills.skill_categories?.languages || []),
+      ...(candidate.resume_skills.skill_categories?.frameworks || []),
+      ...(candidate.resume_skills.skill_categories?.databases || []),
+      ...(candidate.resume_skills.skill_categories?.devops || []),
+      ...(candidate.resume_skills.skill_categories?.other || []),
+    ].map(s => s.toLowerCase().trim());
+    const matched = requiredLower.filter(rs => candidateSkills.some(cs => cs.includes(rs) || rs.includes(cs)));
+    return { matched: matched.length, total: requiredLower.length, pct: Math.round((matched.length / requiredLower.length) * 100) };
+  };
+
+  const skillMatchColor = (pct: number) => {
+    if (pct >= 75) return 'bg-green-100 text-green-800 border-green-300';
+    if (pct >= 50) return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+    return 'bg-red-100 text-red-800 border-red-300';
+  };
+
   const scoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600';
     if (score >= 60) return 'text-yellow-600';
