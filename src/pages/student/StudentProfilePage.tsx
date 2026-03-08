@@ -184,6 +184,29 @@ const StudentProfilePage: React.FC = () => {
           </CardContent>
         </Card>
 
+        {/* Resume Upload */}
+        <Card className="glass-card mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="w-5 h-5 text-primary" /> Resume / CV
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleResumeUpload} />
+            <div className="flex items-center gap-4">
+              <Button variant="outline" className="gap-2" onClick={() => fileInputRef.current?.click()} disabled={isUploading}>
+                {isUploading ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload Resume</>}
+              </Button>
+              {resumeUrl && (
+                <span className="text-sm text-success flex items-center gap-1">
+                  <CheckCircle2 className="w-4 h-4" /> Resume uploaded
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">PDF, DOC, or DOCX — max 5MB</p>
+          </CardContent>
+        </Card>
+
         {/* Platform Links */}
         <Card className="glass-card mb-6">
           <CardHeader>
