@@ -197,9 +197,25 @@ const PostJobPage: React.FC = () => {
             <>
               <CardHeader><CardTitle>Job Description</CardTitle></CardHeader>
               <CardContent className="space-y-4">
+                {/* AI Generator */}
+                <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                  <Label className="flex items-center gap-2 text-sm font-medium">
+                    <Sparkles className="w-4 h-4 text-primary" /> AI Job Description Generator
+                  </Label>
+                  <Textarea
+                    placeholder="Briefly describe what you're looking for, e.g. 'Need a backend engineer to build scalable REST APIs with Python and PostgreSQL...'"
+                    className="min-h-[80px]"
+                    value={briefDescription}
+                    onChange={(e) => setBriefDescription(e.target.value)}
+                  />
+                  <Button variant="outline" className="gap-2" onClick={handleGenerateJD} disabled={isGenerating}>
+                    {isGenerating ? <><Loader2 className="w-4 h-4 animate-spin" /> Generating...</> : <><Sparkles className="w-4 h-4" /> Generate Full JD</>}
+                  </Button>
+                </div>
+
                 <div className="space-y-2">
                   <Label>Description *</Label>
-                  <Textarea placeholder="Paste the full job description here..." className="min-h-[200px]"
+                  <Textarea placeholder="Paste or edit the full job description here..." className="min-h-[200px]"
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} />
                 </div>
