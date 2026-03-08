@@ -15,25 +15,42 @@ const StudentDashboard: React.FC = () => {
   const { studentProfile } = useAuth();
   const profileStrength = studentProfile?.profile_complete ? 85 : 35;
 
-  const [stats, setStats] = useState({ total: 0, pending: 0, shortlisted: 0 });
+  const [stats, setStats] = useState({ total: 0, pending: 0, shortlisted: 0, rejected: 0, interview: 0 });
   const [recentJobs, setRecentJobs] = useState<any[]>([]);
+  const [upcomingInterviews, setUpcomingInterviews] = useState<any[]>([]);
+  const [recentApps, setRecentApps] = useState<any[]>([]);
 
   useEffect(() => {
+    if (!studentProfile?.id) return;
+
     // Fetch application stats
-    if (studentProfile?.id) {
-      supabase
-        .from('applications')
-        .select('status')
-        .eq('student_id', studentProfile.id)
-        .then(({ data }) => {
-          const apps = data || [];
-          setStats({
-            total: apps.length,
-            pending: apps.filter(a => a.status === 'pending' || a.status === 'under_review').length,
-            shortlisted: apps.filter(a => a.status === 'shortlisted').length,
-          });
+    supabase
+      .from('applications')
+      .select('id, status, applied_at, jobs(title, recruiters(company_name))')
+      .eq('student_id', studentProfile.id)
+      .order('applied_at', { ascending: false })
+      .then(({ data }) => {
+        const apps = (data as any) || [];
+        setStats({
+          total: apps.length,
+          pending: apps.filter((a: any) => a.status === 'pending' || a.status === 'under_review').length,
+          shortlisted: apps.filter((a: any) => a.status === 'shortlisted').length,
+          rejected: apps.filter((a: any) => a.status === 'rejected').length,
+          interview: apps.filter((a: any) => a.status === 'interview_scheduled').length,
         });
-    }
+        setRecentApps(apps.slice(0, 5));
+      });
+
+    // Fetch upcoming interviews
+    supabase
+      .from('interviews')
+      .select('id, scheduled_at, duration_minutes, meeting_link, status, jobs(title, recruiters(company_name))')
+      .eq('student_id', studentProfile.id)
+      .gte('scheduled_at', new Date().toISOString())
+      .eq('status', 'scheduled')
+      .order('scheduled_at', { ascending: true })
+      .limit(3)
+      .then(({ data }) => setUpcomingInterviews((data as any) || []));
 
     // Fetch recent jobs
     supabase
