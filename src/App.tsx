@@ -68,6 +68,8 @@ const App = () => (
               <Route path="/recruiter/project-scoring" element={<ProjectScoringPage />} />
               <Route path="/recruiter/crm" element={<RecruiterCRMPage />} />
               <Route path="/recruiter/talent-radar" element={<TalentRadarPage />} />
+              <Route path="/recruiter/bias-detector" element={<BiasDetectorPage />} />
+              <Route path="/recruiter/agent" element={<RecruiterAgentPage />} />
 
               {/* Student Routes */}
               <Route path="/student/login" element={<StudentLogin />} />
