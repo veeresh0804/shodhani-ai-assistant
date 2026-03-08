@@ -75,11 +75,11 @@ const CandidateRankingPage: React.FC = () => {
     const fetchJob = async () => {
       const { data } = await supabase
         .from('jobs')
-        .select('id, title, applications_count')
+        .select('id, title, applications_count, required_skills, preferred_skills')
         .eq('id', jobId)
         .eq('recruiter_id', recruiterProfile.id)
         .maybeSingle();
-      if (data) setJob(data);
+      if (data) setJob(data as JobInfo);
       else {
         toast({ title: 'Job not found', variant: 'destructive' });
         navigate('/recruiter/dashboard');
