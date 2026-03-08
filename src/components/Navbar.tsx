@@ -23,6 +23,7 @@ const Navbar: React.FC = () => {
       return [
         { path: '/recruiter/dashboard', label: 'Dashboard' },
         { path: '/recruiter/post-job', label: 'Post Job' },
+        { path: '/recruiter/talent', label: 'Talent' },
         { path: '/recruiter/analytics', label: 'Analytics' },
         { path: '/recruiter/interviews', label: 'Interviews' },
       ];
