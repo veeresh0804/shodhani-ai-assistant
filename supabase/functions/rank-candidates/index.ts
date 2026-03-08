@@ -93,6 +93,7 @@ serve(async (req) => {
         linkedin_url: profile?.linkedin_url || null,
         linkedin_data: profile?.linkedin_data || null,
         gemini_analysis: profile?.gemini_analysis || null,
+        resume_skills: profile?.resume_skills || null,
       };
     });
 
@@ -116,7 +117,13 @@ Rank all candidates from best to worst fit. For each candidate provide:
 - Potential gaps or concerns
 - A brief recommendation
 
-Consider: education background, technical skills (from GitHub/LeetCode data if available), profile completeness, and overall fit for the role.`;
+IMPORTANT RANKING CRITERIA:
+1. Resume Skills (resume_skills field): If available, this contains AI-parsed skills directly from the candidate's resume — including technical_skills, skill_categories (languages, frameworks, databases, devops), certifications, projects, and experience level. Use this as a PRIMARY signal for skill matching against the job's required and preferred skills.
+2. GitHub & LeetCode data: Use coding activity, languages, problem-solving stats as supporting evidence.
+3. AI Profile Analysis (gemini_analysis): Use the overall score, skill level, and strengths as holistic context.
+4. Education: Consider degree, branch, institution, and graduation year for relevance.
+
+Candidates with resume_skills data that closely match the job's required_skills should rank significantly higher. Weight resume-extracted skills at ~40%, GitHub/LeetCode data at ~30%, AI profile analysis at ~20%, and education at ~10%.`;
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
