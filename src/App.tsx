@@ -21,6 +21,8 @@ import ResumeAuthenticityPage from "./pages/recruiter/ResumeAuthenticityPage";
 import ProjectScoringPage from "./pages/recruiter/ProjectScoringPage";
 import RecruiterCRMPage from "./pages/recruiter/RecruiterCRMPage";
 import TalentRadarPage from "./pages/recruiter/TalentRadarPage";
+import BiasDetectorPage from "./pages/recruiter/BiasDetectorPage";
+import RecruiterAgentPage from "./pages/recruiter/RecruiterAgentPage";
 
 import StudentLogin from "./pages/student/StudentLogin";
 import StudentRegister from "./pages/student/StudentRegister";
