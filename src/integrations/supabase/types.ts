@@ -291,6 +291,7 @@ export type Database = {
           leetcode_url: string | null
           linkedin_data: Json | null
           linkedin_url: string | null
+          resume_skills: Json | null
           student_id: string
           updated_at: string
         }
@@ -305,6 +306,7 @@ export type Database = {
           leetcode_url?: string | null
           linkedin_data?: Json | null
           linkedin_url?: string | null
+          resume_skills?: Json | null
           student_id: string
           updated_at?: string
         }
@@ -319,6 +321,7 @@ export type Database = {
           leetcode_url?: string | null
           linkedin_data?: Json | null
           linkedin_url?: string | null
+          resume_skills?: Json | null
           student_id?: string
           updated_at?: string
         }
