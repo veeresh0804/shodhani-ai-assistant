@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Briefcase, Users, Clock, Building2, ChevronRight, Sparkles, BarChart3, Calendar } from 'lucide-react';
+import { Plus, Briefcase, Users, Clock, Building2, ChevronRight, Sparkles, BarChart3, Calendar, ShieldCheck, Code2, Kanban, Radar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -61,20 +61,30 @@ const RecruiterDashboard: React.FC = () => {
               {recruiterProfile?.company_name || 'Your Company'}
             </p>
           </div>
-          <div className="flex gap-3">
-            <Link to="/recruiter/analytics">
-              <Button variant="outline" className="gap-2">
-                <BarChart3 className="w-5 h-5" /> Analytics
+          <div className="flex gap-2 flex-wrap">
+            <Link to="/recruiter/crm">
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <Kanban className="w-4 h-4" /> CRM
               </Button>
             </Link>
-            <Link to="/recruiter/interviews">
-              <Button variant="outline" className="gap-2">
-                <Calendar className="w-5 h-5" /> Interviews
+            <Link to="/recruiter/authenticity">
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <ShieldCheck className="w-4 h-4" /> Authenticity
+              </Button>
+            </Link>
+            <Link to="/recruiter/project-scoring">
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <Code2 className="w-4 h-4" /> Projects
+              </Button>
+            </Link>
+            <Link to="/recruiter/talent-radar">
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <Radar className="w-4 h-4" /> Radar
               </Button>
             </Link>
             <Link to="/recruiter/post-job">
-              <Button className="btn-primary gap-2">
-                <Plus className="w-5 h-5" /> Post New Job
+              <Button className="btn-primary gap-1.5" size="sm">
+                <Plus className="w-4 h-4" /> Post Job
               </Button>
             </Link>
           </div>

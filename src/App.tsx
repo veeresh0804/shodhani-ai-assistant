@@ -17,6 +17,10 @@ import CandidateRankingPage from "./pages/recruiter/CandidateRankingPage";
 import AnalyticsDashboard from "./pages/recruiter/AnalyticsDashboard";
 import InterviewSchedulePage from "./pages/recruiter/InterviewSchedulePage";
 import TalentDiscoveryPage from "./pages/recruiter/TalentDiscoveryPage";
+import ResumeAuthenticityPage from "./pages/recruiter/ResumeAuthenticityPage";
+import ProjectScoringPage from "./pages/recruiter/ProjectScoringPage";
+import RecruiterCRMPage from "./pages/recruiter/RecruiterCRMPage";
+import TalentRadarPage from "./pages/recruiter/TalentRadarPage";
 
 import StudentLogin from "./pages/student/StudentLogin";
 import StudentRegister from "./pages/student/StudentRegister";
@@ -56,6 +60,10 @@ const App = () => (
               <Route path="/recruiter/analytics" element={<AnalyticsDashboard />} />
               <Route path="/recruiter/interviews" element={<InterviewSchedulePage />} />
               <Route path="/recruiter/talent" element={<TalentDiscoveryPage />} />
+              <Route path="/recruiter/authenticity" element={<ResumeAuthenticityPage />} />
+              <Route path="/recruiter/project-scoring" element={<ProjectScoringPage />} />
+              <Route path="/recruiter/crm" element={<RecruiterCRMPage />} />
+              <Route path="/recruiter/talent-radar" element={<TalentRadarPage />} />
 
               {/* Student Routes */}
               <Route path="/student/login" element={<StudentLogin />} />
