@@ -11,7 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 const RecruiterRegister: React.FC = () => {
   const navigate = useNavigate();
-  const { signUp } = useAuth();
+  const { signUp, refreshProfile } = useAuth();
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
