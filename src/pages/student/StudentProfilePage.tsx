@@ -421,6 +421,9 @@ const StudentProfilePage: React.FC = () => {
             </Card>
           </>
         )}
+
+        {/* Resume Skills Analysis */}
+        {resumeSkills && <ResumeSkillsDisplay skills={resumeSkills} />}
       </div>
     </div>
   );
