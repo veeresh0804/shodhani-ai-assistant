@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { BrainCircuit, Users, GraduationCap, Menu, X, LogOut, User } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -86,6 +87,7 @@ const Navbar: React.FC = () => {
                   </Link>
                 ))}
 
+                <NotificationBell />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="gap-2 ml-2">
