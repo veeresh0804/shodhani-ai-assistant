@@ -282,11 +282,20 @@ const CandidateRankingPage: React.FC = () => {
                   <CardContent className="pt-6">
                     <div className="flex flex-col md:flex-row gap-4">
                       {/* Left: Rank & Score */}
-                      <div className="flex flex-col items-center gap-2 md:w-24 shrink-0">
+                      <div className="flex flex-col items-center gap-2 md:w-28 shrink-0">
                         {rankBadge(c.rank)}
                         <span className={`text-2xl font-bold ${scoreColor(c.score)}`}>{c.score}</span>
                         <Progress value={c.score} className="h-1.5 w-16" />
                         {statusBadge(c.status || 'pending')}
+                        {(() => {
+                          const match = getSkillMatch(c);
+                          return match ? (
+                            <Badge variant="outline" className={`text-xs font-semibold ${skillMatchColor(match.pct)}`}>
+                              {match.pct}% match
+                              <span className="font-normal ml-1">({match.matched}/{match.total})</span>
+                            </Badge>
+                          ) : null;
+                        })()}
                       </div>
 
                       {/* Right: Details */}
