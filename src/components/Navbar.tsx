@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { BrainCircuit, Users, GraduationCap, Menu, X, LogOut, User } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import {
