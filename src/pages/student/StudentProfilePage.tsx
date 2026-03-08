@@ -67,6 +67,34 @@ const StudentProfilePage: React.FC = () => {
       });
   }, [studentProfile?.id]);
 
+  useEffect(() => {
+    if (!studentProfile?.id) return;
+    supabase.from('students').select('resume_url').eq('id', studentProfile.id).maybeSingle()
+      .then(({ data }) => { if (data?.resume_url) setResumeUrl(data.resume_url); });
+  }, [studentProfile?.id]);
+
+  const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !studentProfile?.id) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: 'File too large', description: 'Max 5MB', variant: 'destructive' });
+      return;
+    }
+    setIsUploading(true);
+    const path = `${user.id}/${Date.now()}_${file.name}`;
+    const { error: uploadError } = await supabase.storage.from('resumes').upload(path, file, { upsert: true });
+    if (uploadError) {
+      toast({ title: 'Upload failed', description: uploadError.message, variant: 'destructive' });
+      setIsUploading(false);
+      return;
+    }
+    await supabase.from('students').update({ resume_url: path }).eq('id', studentProfile.id);
+    setResumeUrl(path);
+    toast({ title: 'Resume uploaded!' });
+    setIsUploading(false);
+  };
+
+
   const handleSave = async () => {
     if (!studentProfile?.id) return;
     setIsSaving(true);
