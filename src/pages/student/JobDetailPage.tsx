@@ -139,6 +139,11 @@ const JobDetailPage: React.FC = () => {
                 <CheckCircle2 className="w-4 h-4" />
                 {hasApplied ? 'Already Applied' : isApplying ? 'Applying...' : 'Apply Now'}
               </Button>
+              <Link to={`/student/jobs/${jobId}/eligibility`}>
+                <Button variant="outline" className="gap-2">
+                  <Target className="w-4 h-4" /> Check Eligibility
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
