@@ -150,6 +150,15 @@ const CandidateRankingPage: React.FC = () => {
     setUpdatingStatus(null);
   };
 
+  const toggleResumeExpand = (appId: string) => {
+    setExpandedResume(prev => {
+      const next = new Set(prev);
+      if (next.has(appId)) next.delete(appId);
+      else next.add(appId);
+      return next;
+    });
+  };
+
   const scoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600';
     if (score >= 60) return 'text-yellow-600';
