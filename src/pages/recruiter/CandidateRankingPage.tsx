@@ -9,6 +9,23 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
+interface ResumeSkills {
+  technical_skills?: string[];
+  soft_skills?: string[];
+  certifications?: string[];
+  experience_summary?: string;
+  projects?: { name: string; description: string; technologies: string[] }[];
+  skill_categories?: {
+    languages?: string[];
+    frameworks?: string[];
+    databases?: string[];
+    devops?: string[];
+    other?: string[];
+  };
+  overall_experience_level?: string;
+  resume_score?: number;
+}
+
 interface RankedCandidate {
   application_id: string;
   student_id: string;
@@ -27,6 +44,7 @@ interface RankedCandidate {
   leetcode_url: string | null;
   linkedin_url: string | null;
   status?: string;
+  resume_skills?: ResumeSkills | null;
 }
 
 interface JobInfo {

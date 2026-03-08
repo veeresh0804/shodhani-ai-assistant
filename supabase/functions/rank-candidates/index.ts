@@ -216,6 +216,7 @@ Candidates with resume_skills data that closely match the job's required_skills 
         github_url: profile?.github_url || null,
         leetcode_url: profile?.leetcode_url || null,
         linkedin_url: profile?.linkedin_url || null,
+        resume_skills: profile?.resume_skills || null,
       };
     });
 
