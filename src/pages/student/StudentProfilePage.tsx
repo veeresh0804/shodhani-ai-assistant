@@ -221,10 +221,15 @@ const StudentProfilePage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleResumeUpload} />
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 flex-wrap">
               <Button variant="outline" className="gap-2" onClick={() => fileInputRef.current?.click()} disabled={isUploading}>
                 {isUploading ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload Resume</>}
               </Button>
+              {resumeUrl && (
+                <Button variant="outline" className="gap-2" onClick={handleParseResume} disabled={isParsing}>
+                  {isParsing ? <><Loader2 className="w-4 h-4 animate-spin" /> Parsing...</> : <><ScanSearch className="w-4 h-4" /> AI Parse Resume</>}
+                </Button>
+              )}
               {resumeUrl && (
                 <span className="text-sm text-success flex items-center gap-1">
                   <CheckCircle2 className="w-4 h-4" /> Resume uploaded
