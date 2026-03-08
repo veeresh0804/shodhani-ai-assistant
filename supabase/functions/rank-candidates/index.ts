@@ -93,6 +93,7 @@ serve(async (req) => {
         linkedin_url: profile?.linkedin_url || null,
         linkedin_data: profile?.linkedin_data || null,
         gemini_analysis: profile?.gemini_analysis || null,
+        resume_skills: profile?.resume_skills || null,
       };
     });
 
