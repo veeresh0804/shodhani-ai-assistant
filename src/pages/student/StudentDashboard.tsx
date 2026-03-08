@@ -167,15 +167,29 @@ const StudentDashboard: React.FC = () => {
               </CardContent>
             </Card>
           </Link>
-          <Link to="/student/jobs">
+          <Link to="/student/portfolio">
+            <Card className="glass-card-hover cursor-pointer">
+              <CardContent className="pt-6 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold">AI Portfolio</h3>
+                  <p className="text-sm text-muted-foreground">Build your portfolio</p>
+                </div>
+                <ArrowRight className="w-5 h-5 text-muted-foreground" />
+              </CardContent>
+            </Card>
+          </Link>
+          <Link to="/student/interview-sim">
             <Card className="glass-card-hover cursor-pointer">
               <CardContent className="pt-6 flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-warning/20 flex items-center justify-center">
                   <Briefcase className="w-6 h-6 text-warning" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold">Check Eligibility</h3>
-                  <p className="text-sm text-muted-foreground">Match skills to jobs</p>
+                  <h3 className="font-semibold">Mock Interview</h3>
+                  <p className="text-sm text-muted-foreground">Practice with AI</p>
                 </div>
                 <ArrowRight className="w-5 h-5 text-muted-foreground" />
               </CardContent>

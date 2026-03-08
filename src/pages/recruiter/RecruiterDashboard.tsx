@@ -82,6 +82,16 @@ const RecruiterDashboard: React.FC = () => {
                 <Radar className="w-4 h-4" /> Radar
               </Button>
             </Link>
+            <Link to="/recruiter/bias-detector">
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <ShieldAlert className="w-4 h-4" /> Bias
+              </Button>
+            </Link>
+            <Link to="/recruiter/agent">
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <Bot className="w-4 h-4" /> AI Agent
+              </Button>
+            </Link>
             <Link to="/recruiter/post-job">
               <Button className="btn-primary gap-1.5" size="sm">
                 <Plus className="w-4 h-4" /> Post Job
