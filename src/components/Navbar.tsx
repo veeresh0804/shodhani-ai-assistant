@@ -23,9 +23,10 @@ const Navbar: React.FC = () => {
       return [
         { path: '/recruiter/dashboard', label: 'Dashboard' },
         { path: '/recruiter/post-job', label: 'Post Job' },
+        { path: '/recruiter/crm', label: 'CRM' },
         { path: '/recruiter/talent', label: 'Talent' },
+        { path: '/recruiter/talent-radar', label: 'Radar' },
         { path: '/recruiter/analytics', label: 'Analytics' },
-        { path: '/recruiter/interviews', label: 'Interviews' },
       ];
     }
     if (userType === 'student') {

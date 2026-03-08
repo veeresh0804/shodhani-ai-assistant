@@ -60,6 +60,10 @@ const App = () => (
               <Route path="/recruiter/analytics" element={<AnalyticsDashboard />} />
               <Route path="/recruiter/interviews" element={<InterviewSchedulePage />} />
               <Route path="/recruiter/talent" element={<TalentDiscoveryPage />} />
+              <Route path="/recruiter/authenticity" element={<ResumeAuthenticityPage />} />
+              <Route path="/recruiter/project-scoring" element={<ProjectScoringPage />} />
+              <Route path="/recruiter/crm" element={<RecruiterCRMPage />} />
+              <Route path="/recruiter/talent-radar" element={<TalentRadarPage />} />
 
               {/* Student Routes */}
               <Route path="/student/login" element={<StudentLogin />} />

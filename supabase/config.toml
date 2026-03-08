@@ -17,3 +17,9 @@ verify_jwt = false
 
 [functions.career-path]
 verify_jwt = false
+
+[functions.authenticity-check]
+verify_jwt = false
+
+[functions.project-score]
+verify_jwt = false
