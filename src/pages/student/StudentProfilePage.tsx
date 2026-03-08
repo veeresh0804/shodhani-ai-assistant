@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { User, Github, Code2, Linkedin, Save, CheckCircle2, Sparkles, Loader2, Star, Trophy, BookOpen, Target } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { User, Github, Code2, Linkedin, Save, CheckCircle2, Sparkles, Loader2, Star, Trophy, BookOpen, Target, Upload, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -29,7 +29,7 @@ interface ExtractedData {
 }
 
 const StudentProfilePage: React.FC = () => {
-  const { studentProfile, refreshProfile } = useAuth();
+  const { user, studentProfile, refreshProfile } = useAuth();
   const { toast } = useToast();
 
   const [links, setLinks] = useState({ leetcode: '', github: '', linkedin: '' });
@@ -37,6 +37,9 @@ const StudentProfilePage: React.FC = () => {
   const [isExtracting, setIsExtracting] = useState(false);
   const [extracted, setExtracted] = useState<ExtractedData | null>(null);
   const [existingAnalysis, setExistingAnalysis] = useState<ProfileAnalysis | null>(null);
+  const [resumeUrl, setResumeUrl] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!studentProfile?.id) return;
@@ -63,6 +66,34 @@ const StudentProfilePage: React.FC = () => {
         }
       });
   }, [studentProfile?.id]);
+
+  useEffect(() => {
+    if (!studentProfile?.id) return;
+    supabase.from('students').select('resume_url').eq('id', studentProfile.id).maybeSingle()
+      .then(({ data }) => { if (data?.resume_url) setResumeUrl(data.resume_url); });
+  }, [studentProfile?.id]);
+
+  const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !studentProfile?.id) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: 'File too large', description: 'Max 5MB', variant: 'destructive' });
+      return;
+    }
+    setIsUploading(true);
+    const path = `${user.id}/${Date.now()}_${file.name}`;
+    const { error: uploadError } = await supabase.storage.from('resumes').upload(path, file, { upsert: true });
+    if (uploadError) {
+      toast({ title: 'Upload failed', description: uploadError.message, variant: 'destructive' });
+      setIsUploading(false);
+      return;
+    }
+    await supabase.from('students').update({ resume_url: path }).eq('id', studentProfile.id);
+    setResumeUrl(path);
+    toast({ title: 'Resume uploaded!' });
+    setIsUploading(false);
+  };
+
 
   const handleSave = async () => {
     if (!studentProfile?.id) return;
@@ -150,6 +181,29 @@ const StudentProfilePage: React.FC = () => {
                 <p className="font-medium">{studentProfile?.degree} - {studentProfile?.branch}</p>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Resume Upload */}
+        <Card className="glass-card mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="w-5 h-5 text-primary" /> Resume / CV
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleResumeUpload} />
+            <div className="flex items-center gap-4">
+              <Button variant="outline" className="gap-2" onClick={() => fileInputRef.current?.click()} disabled={isUploading}>
+                {isUploading ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload Resume</>}
+              </Button>
+              {resumeUrl && (
+                <span className="text-sm text-success flex items-center gap-1">
+                  <CheckCircle2 className="w-4 h-4" /> Resume uploaded
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">PDF, DOC, or DOCX — max 5MB</p>
           </CardContent>
         </Card>
 

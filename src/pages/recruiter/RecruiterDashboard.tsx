@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Briefcase, Users, Clock, Building2, ChevronRight, Sparkles } from 'lucide-react';
+import { Plus, Briefcase, Users, Clock, Building2, ChevronRight, Sparkles, BarChart3, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -61,11 +61,23 @@ const RecruiterDashboard: React.FC = () => {
               {recruiterProfile?.company_name || 'Your Company'}
             </p>
           </div>
-          <Link to="/recruiter/post-job">
-            <Button className="btn-primary gap-2">
-              <Plus className="w-5 h-5" /> Post New Job
-            </Button>
-          </Link>
+          <div className="flex gap-3">
+            <Link to="/recruiter/analytics">
+              <Button variant="outline" className="gap-2">
+                <BarChart3 className="w-5 h-5" /> Analytics
+              </Button>
+            </Link>
+            <Link to="/recruiter/interviews">
+              <Button variant="outline" className="gap-2">
+                <Calendar className="w-5 h-5" /> Interviews
+              </Button>
+            </Link>
+            <Link to="/recruiter/post-job">
+              <Button className="btn-primary gap-2">
+                <Plus className="w-5 h-5" /> Post New Job
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Stats */}

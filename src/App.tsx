@@ -14,6 +14,8 @@ import RecruiterRegister from "./pages/recruiter/RecruiterRegister";
 import RecruiterDashboard from "./pages/recruiter/RecruiterDashboard";
 import PostJobPage from "./pages/recruiter/PostJobPage";
 import CandidateRankingPage from "./pages/recruiter/CandidateRankingPage";
+import AnalyticsDashboard from "./pages/recruiter/AnalyticsDashboard";
+import InterviewSchedulePage from "./pages/recruiter/InterviewSchedulePage";
 
 import StudentLogin from "./pages/student/StudentLogin";
 import StudentRegister from "./pages/student/StudentRegister";
@@ -23,6 +25,10 @@ import JobDetailPage from "./pages/student/JobDetailPage";
 import ApplicationsPage from "./pages/student/ApplicationsPage";
 import StudentProfilePage from "./pages/student/StudentProfilePage";
 import EligibilityCheckerPage from "./pages/student/EligibilityCheckerPage";
+import InterviewsPage from "./pages/student/InterviewsPage";
+
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +50,8 @@ const App = () => (
               <Route path="/recruiter/dashboard" element={<RecruiterDashboard />} />
               <Route path="/recruiter/post-job" element={<PostJobPage />} />
               <Route path="/recruiter/jobs/:jobId/candidates" element={<CandidateRankingPage />} />
+              <Route path="/recruiter/analytics" element={<AnalyticsDashboard />} />
+              <Route path="/recruiter/interviews" element={<InterviewSchedulePage />} />
 
               {/* Student Routes */}
               <Route path="/student/login" element={<StudentLogin />} />
@@ -54,10 +62,16 @@ const App = () => (
               <Route path="/student/jobs/:jobId/eligibility" element={<EligibilityCheckerPage />} />
               <Route path="/student/applications" element={<ApplicationsPage />} />
               <Route path="/student/profile" element={<StudentProfilePage />} />
+              <Route path="/student/interviews" element={<InterviewsPage />} />
+
+              {/* Admin Routes */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
               {/* Legacy redirects */}
               <Route path="/recruiter" element={<Navigate to="/recruiter/login" replace />} />
               <Route path="/student" element={<Navigate to="/student/login" replace />} />
+              <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>
