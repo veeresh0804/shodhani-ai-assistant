@@ -32,9 +32,9 @@ const Navbar: React.FC = () => {
       return [
         { path: '/student/dashboard', label: 'Dashboard' },
         { path: '/student/jobs', label: 'Browse Jobs' },
-        { path: '/student/applications', label: 'My Applications' },
-        { path: '/student/interviews', label: 'Interviews' },
-        { path: '/student/profile', label: 'My Profile' },
+        { path: '/student/applications', label: 'Applications' },
+        { path: '/student/career-path', label: 'Career Path' },
+        { path: '/student/profile', label: 'Profile' },
       ];
     }
     return [];
