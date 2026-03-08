@@ -26,6 +26,7 @@ import ApplicationsPage from "./pages/student/ApplicationsPage";
 import StudentProfilePage from "./pages/student/StudentProfilePage";
 import EligibilityCheckerPage from "./pages/student/EligibilityCheckerPage";
 import InterviewsPage from "./pages/student/InterviewsPage";
+import NotificationsPage from "./pages/student/NotificationsPage";
 
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
