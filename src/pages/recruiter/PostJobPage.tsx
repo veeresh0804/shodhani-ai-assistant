@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Briefcase, FileText, Target, X, Plus } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Briefcase, FileText, Target, X, Plus, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,6 +19,8 @@ const PostJobPage: React.FC = () => {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isPosting, setIsPosting] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [briefDescription, setBriefDescription] = useState('');
   const [formData, setFormData] = useState({
     title: '', department: '', location: '', jobType: '',
     experienceRequired: '', description: '',
@@ -27,6 +29,43 @@ const PostJobPage: React.FC = () => {
   });
   const [newSkill, setNewSkill] = useState('');
   const [skillType, setSkillType] = useState<'required' | 'preferred'>('required');
+
+  const handleGenerateJD = async () => {
+    if (!briefDescription.trim()) {
+      toast({ title: 'Enter a brief description', variant: 'destructive' });
+      return;
+    }
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-jd', {
+        body: {
+          title: formData.title,
+          job_type: formData.jobType,
+          location: formData.location,
+          experience: formData.experienceRequired,
+          brief_description: briefDescription,
+        },
+      });
+      if (error) throw error;
+      if (data?.error) {
+        toast({ title: 'Generation failed', description: data.error, variant: 'destructive' });
+        return;
+      }
+      setFormData(prev => ({
+        ...prev,
+        title: prev.title || data.suggested_title || '',
+        description: data.description || '',
+        requiredSkills: data.required_skills || [],
+        preferredSkills: data.preferred_skills || [],
+        salaryRange: prev.salaryRange || data.salary_suggestion || '',
+      }));
+      toast({ title: 'JD generated!', description: 'Review and edit the generated description.' });
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message || 'Failed to generate', variant: 'destructive' });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const addSkill = () => {
     if (!newSkill.trim()) return;
