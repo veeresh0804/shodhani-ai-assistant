@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { User, Github, Code2, Linkedin, Save, CheckCircle2, Sparkles, Loader2, Star, Trophy, BookOpen, Target, Upload, FileText } from 'lucide-react';
+import { User, Github, Code2, Linkedin, Save, CheckCircle2, Sparkles, Loader2, Star, Trophy, BookOpen, Target, Upload, FileText, ScanSearch } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import ResumeSkillsDisplay from '@/components/student/ResumeSkillsDisplay';
 
 interface ProfileAnalysis {
   overall_score: number;
@@ -39,29 +40,34 @@ const StudentProfilePage: React.FC = () => {
   const [existingAnalysis, setExistingAnalysis] = useState<ProfileAnalysis | null>(null);
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isParsing, setIsParsing] = useState(false);
+  const [resumeSkills, setResumeSkills] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!studentProfile?.id) return;
     supabase
       .from('student_profiles')
-      .select('leetcode_url, github_url, linkedin_url, gemini_analysis, github_data, leetcode_data')
+      .select('leetcode_url, github_url, linkedin_url, gemini_analysis, github_data, leetcode_data, resume_skills')
       .eq('student_id', studentProfile.id)
       .maybeSingle()
       .then(({ data }) => {
         if (data) {
           setLinks({
-            leetcode: data.leetcode_url || '',
-            github: data.github_url || '',
-            linkedin: data.linkedin_url || '',
+            leetcode: (data as any).leetcode_url || '',
+            github: (data as any).github_url || '',
+            linkedin: (data as any).linkedin_url || '',
           });
-          if (data.gemini_analysis && Object.keys(data.gemini_analysis).length > 0) {
-            setExistingAnalysis(data.gemini_analysis as unknown as ProfileAnalysis);
+          if ((data as any).gemini_analysis && Object.keys((data as any).gemini_analysis).length > 0) {
+            setExistingAnalysis((data as any).gemini_analysis as unknown as ProfileAnalysis);
             setExtracted({
-              github_data: data.github_data,
-              leetcode_data: data.leetcode_data,
-              analysis: data.gemini_analysis as unknown as ProfileAnalysis,
+              github_data: (data as any).github_data,
+              leetcode_data: (data as any).leetcode_data,
+              analysis: (data as any).gemini_analysis as unknown as ProfileAnalysis,
             });
+          }
+          if ((data as any).resume_skills && Object.keys((data as any).resume_skills).length > 0) {
+            setResumeSkills((data as any).resume_skills);
           }
         }
       });
@@ -94,6 +100,28 @@ const StudentProfilePage: React.FC = () => {
     setIsUploading(false);
   };
 
+  const handleParseResume = async () => {
+    if (!resumeUrl) {
+      toast({ title: 'No resume', description: 'Please upload a resume first.', variant: 'destructive' });
+      return;
+    }
+    setIsParsing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('parse-resume', {});
+      if (error) throw error;
+      if (data?.error) {
+        toast({ title: 'Parsing failed', description: data.error, variant: 'destructive' });
+        return;
+      }
+      setResumeSkills(data.resume_skills);
+      toast({ title: 'Resume parsed!', description: 'AI has extracted skills from your resume.' });
+    } catch (e: any) {
+      console.error(e);
+      toast({ title: 'Error', description: e.message || 'Failed to parse resume', variant: 'destructive' });
+    } finally {
+      setIsParsing(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!studentProfile?.id) return;
@@ -193,10 +221,15 @@ const StudentProfilePage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleResumeUpload} />
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 flex-wrap">
               <Button variant="outline" className="gap-2" onClick={() => fileInputRef.current?.click()} disabled={isUploading}>
                 {isUploading ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload Resume</>}
               </Button>
+              {resumeUrl && (
+                <Button variant="outline" className="gap-2" onClick={handleParseResume} disabled={isParsing}>
+                  {isParsing ? <><Loader2 className="w-4 h-4 animate-spin" /> Parsing...</> : <><ScanSearch className="w-4 h-4" /> AI Parse Resume</>}
+                </Button>
+              )}
               {resumeUrl && (
                 <span className="text-sm text-success flex items-center gap-1">
                   <CheckCircle2 className="w-4 h-4" /> Resume uploaded
@@ -388,6 +421,9 @@ const StudentProfilePage: React.FC = () => {
             </Card>
           </>
         )}
+
+        {/* Resume Skills Analysis */}
+        {resumeSkills && <ResumeSkillsDisplay skills={resumeSkills} />}
       </div>
     </div>
   );
