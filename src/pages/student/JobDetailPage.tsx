@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Building2, MapPin, Clock, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Building2, MapPin, Clock, CheckCircle2, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -139,6 +139,11 @@ const JobDetailPage: React.FC = () => {
                 <CheckCircle2 className="w-4 h-4" />
                 {hasApplied ? 'Already Applied' : isApplying ? 'Applying...' : 'Apply Now'}
               </Button>
+              <Link to={`/student/jobs/${jobId}/eligibility`}>
+                <Button variant="outline" className="gap-2">
+                  <Target className="w-4 h-4" /> Check Eligibility
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>

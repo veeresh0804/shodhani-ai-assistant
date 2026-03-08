@@ -22,6 +22,7 @@ import JobListingsPage from "./pages/student/JobListingsPage";
 import JobDetailPage from "./pages/student/JobDetailPage";
 import ApplicationsPage from "./pages/student/ApplicationsPage";
 import StudentProfilePage from "./pages/student/StudentProfilePage";
+import EligibilityCheckerPage from "./pages/student/EligibilityCheckerPage";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
               <Route path="/student/dashboard" element={<StudentDashboard />} />
               <Route path="/student/jobs" element={<JobListingsPage />} />
               <Route path="/student/jobs/:jobId" element={<JobDetailPage />} />
+              <Route path="/student/jobs/:jobId/eligibility" element={<EligibilityCheckerPage />} />
               <Route path="/student/applications" element={<ApplicationsPage />} />
               <Route path="/student/profile" element={<StudentProfilePage />} />
 
