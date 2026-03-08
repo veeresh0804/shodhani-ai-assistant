@@ -16,6 +16,7 @@ import PostJobPage from "./pages/recruiter/PostJobPage";
 import CandidateRankingPage from "./pages/recruiter/CandidateRankingPage";
 import AnalyticsDashboard from "./pages/recruiter/AnalyticsDashboard";
 import InterviewSchedulePage from "./pages/recruiter/InterviewSchedulePage";
+import TalentDiscoveryPage from "./pages/recruiter/TalentDiscoveryPage";
 
 import StudentLogin from "./pages/student/StudentLogin";
 import StudentRegister from "./pages/student/StudentRegister";
