@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trophy, Star, AlertTriangle, ExternalLink, Loader2, Sparkles, GraduationCap, Github, Code2, CheckCircle, XCircle, UserCheck } from 'lucide-react';
+import { ArrowLeft, Trophy, Star, AlertTriangle, ExternalLink, Loader2, Sparkles, GraduationCap, Github, Code2, CheckCircle, XCircle, UserCheck, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,23 @@ import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+
+interface ResumeSkills {
+  technical_skills?: string[];
+  soft_skills?: string[];
+  certifications?: string[];
+  experience_summary?: string;
+  projects?: { name: string; description: string; technologies: string[] }[];
+  skill_categories?: {
+    languages?: string[];
+    frameworks?: string[];
+    databases?: string[];
+    devops?: string[];
+    other?: string[];
+  };
+  overall_experience_level?: string;
+  resume_score?: number;
+}
 
 interface RankedCandidate {
   application_id: string;
@@ -27,6 +44,7 @@ interface RankedCandidate {
   leetcode_url: string | null;
   linkedin_url: string | null;
   status?: string;
+  resume_skills?: ResumeSkills | null;
 }
 
 interface JobInfo {
@@ -48,6 +66,7 @@ const CandidateRankingPage: React.FC = () => {
   const [isRanking, setIsRanking] = useState(false);
   const [hasRanked, setHasRanked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
+  const [expandedResume, setExpandedResume] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!jobId || !recruiterProfile?.id) return;
@@ -129,6 +148,15 @@ const CandidateRankingPage: React.FC = () => {
       toast({ title: `Candidate ${newStatus}`, description: `Application status updated to ${newStatus}.` });
     }
     setUpdatingStatus(null);
+  };
+
+  const toggleResumeExpand = (appId: string) => {
+    setExpandedResume(prev => {
+      const next = new Set(prev);
+      if (next.has(appId)) next.delete(appId);
+      else next.add(appId);
+      return next;
+    });
   };
 
   const scoreColor = (score: number) => {
@@ -300,6 +328,117 @@ const CandidateRankingPage: React.FC = () => {
                         )}
 
                         <p className="text-sm bg-muted/50 rounded-lg p-3 italic">{c.recommendation}</p>
+
+                        {/* Resume Skills Section */}
+                        {c.resume_skills && (
+                          <div className="border border-border/50 rounded-lg overflow-hidden">
+                            <button
+                              className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium hover:bg-muted/50 transition-colors"
+                              onClick={() => toggleResumeExpand(c.application_id)}
+                            >
+                              <span className="flex items-center gap-2">
+                                <FileText className="w-4 h-4 text-primary" />
+                                Resume Skills
+                                {c.resume_skills.resume_score != null && (
+                                  <Badge variant="secondary" className="text-xs">{c.resume_skills.resume_score}/100</Badge>
+                                )}
+                                {c.resume_skills.overall_experience_level && (
+                                  <Badge variant="outline" className="text-xs capitalize">{c.resume_skills.overall_experience_level}</Badge>
+                                )}
+                              </span>
+                              {expandedResume.has(c.application_id) ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                            </button>
+                            {expandedResume.has(c.application_id) && (
+                              <div className="px-3 pb-3 space-y-3 border-t border-border/50 pt-3">
+                                {c.resume_skills.experience_summary && (
+                                  <p className="text-xs text-muted-foreground">{c.resume_skills.experience_summary}</p>
+                                )}
+                                {c.resume_skills.technical_skills && c.resume_skills.technical_skills.length > 0 && (
+                                  <div>
+                                    <p className="text-xs font-medium text-muted-foreground mb-1">Technical Skills</p>
+                                    <div className="flex flex-wrap gap-1">
+                                      {c.resume_skills.technical_skills.map((s, i) => (
+                                        <Badge key={i} className="badge-primary text-xs">{s}</Badge>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {c.resume_skills.skill_categories && (
+                                  <div className="grid grid-cols-2 gap-2">
+                                    {c.resume_skills.skill_categories.languages && c.resume_skills.skill_categories.languages.length > 0 && (
+                                      <div>
+                                        <p className="text-xs font-medium text-muted-foreground mb-1">Languages</p>
+                                        <div className="flex flex-wrap gap-1">
+                                          {c.resume_skills.skill_categories.languages.map((s, i) => (
+                                            <Badge key={i} variant="secondary" className="text-xs">{s}</Badge>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                    {c.resume_skills.skill_categories.frameworks && c.resume_skills.skill_categories.frameworks.length > 0 && (
+                                      <div>
+                                        <p className="text-xs font-medium text-muted-foreground mb-1">Frameworks</p>
+                                        <div className="flex flex-wrap gap-1">
+                                          {c.resume_skills.skill_categories.frameworks.map((s, i) => (
+                                            <Badge key={i} variant="secondary" className="text-xs">{s}</Badge>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                    {c.resume_skills.skill_categories.databases && c.resume_skills.skill_categories.databases.length > 0 && (
+                                      <div>
+                                        <p className="text-xs font-medium text-muted-foreground mb-1">Databases</p>
+                                        <div className="flex flex-wrap gap-1">
+                                          {c.resume_skills.skill_categories.databases.map((s, i) => (
+                                            <Badge key={i} variant="outline" className="text-xs">{s}</Badge>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                    {c.resume_skills.skill_categories.devops && c.resume_skills.skill_categories.devops.length > 0 && (
+                                      <div>
+                                        <p className="text-xs font-medium text-muted-foreground mb-1">DevOps</p>
+                                        <div className="flex flex-wrap gap-1">
+                                          {c.resume_skills.skill_categories.devops.map((s, i) => (
+                                            <Badge key={i} variant="outline" className="text-xs">{s}</Badge>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                                {c.resume_skills.certifications && c.resume_skills.certifications.length > 0 && (
+                                  <div>
+                                    <p className="text-xs font-medium text-muted-foreground mb-1">Certifications</p>
+                                    <div className="flex flex-wrap gap-1">
+                                      {c.resume_skills.certifications.map((s, i) => (
+                                        <Badge key={i} variant="outline" className="text-xs">{s}</Badge>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {c.resume_skills.projects && c.resume_skills.projects.length > 0 && (
+                                  <div>
+                                    <p className="text-xs font-medium text-muted-foreground mb-1">Projects</p>
+                                    <div className="space-y-2">
+                                      {c.resume_skills.projects.slice(0, 3).map((p, i) => (
+                                        <div key={i} className="text-xs">
+                                          <span className="font-medium">{p.name}</span>
+                                          <span className="text-muted-foreground"> — {p.description}</span>
+                                          <div className="flex flex-wrap gap-1 mt-1">
+                                            {p.technologies.map((t, j) => (
+                                              <Badge key={j} variant="secondary" className="text-xs py-0">{t}</Badge>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
 
                         {/* Action Buttons */}
                         <div className="flex gap-2 pt-2">
