@@ -28,7 +28,7 @@ const AnalyticsDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!recruiterProfile?.id) return;
+    if (!recruiterProfile?.id) { setIsLoading(false); return; }
     const fetch = async () => {
       const { data: jobs } = await supabase
         .from('jobs')

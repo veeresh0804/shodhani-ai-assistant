@@ -55,7 +55,7 @@ const InterviewSchedulePage: React.FC = () => {
   });
 
   useEffect(() => {
-    if (!recruiterProfile?.id) return;
+    if (!recruiterProfile?.id) { setIsLoading(false); return; }
     const fetchData = async () => {
       // Fetch interviews
       const { data: interviewsData } = await supabase
