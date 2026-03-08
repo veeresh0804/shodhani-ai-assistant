@@ -13,6 +13,7 @@ import RecruiterLogin from "./pages/recruiter/RecruiterLogin";
 import RecruiterRegister from "./pages/recruiter/RecruiterRegister";
 import RecruiterDashboard from "./pages/recruiter/RecruiterDashboard";
 import PostJobPage from "./pages/recruiter/PostJobPage";
+import CandidateRankingPage from "./pages/recruiter/CandidateRankingPage";
 
 import StudentLogin from "./pages/student/StudentLogin";
 import StudentRegister from "./pages/student/StudentRegister";
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/recruiter/register" element={<RecruiterRegister />} />
               <Route path="/recruiter/dashboard" element={<RecruiterDashboard />} />
               <Route path="/recruiter/post-job" element={<PostJobPage />} />
+              <Route path="/recruiter/jobs/:jobId/candidates" element={<CandidateRankingPage />} />
 
               {/* Student Routes */}
               <Route path="/student/login" element={<StudentLogin />} />

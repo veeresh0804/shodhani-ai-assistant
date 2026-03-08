@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Briefcase, Users, Clock, Building2, ChevronRight } from 'lucide-react';
+import { Plus, Briefcase, Users, Clock, Building2, ChevronRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -145,6 +145,13 @@ const RecruiterDashboard: React.FC = () => {
                         {job.status}
                       </Badge>
                       <span className="text-sm text-muted-foreground">{job.applications_count} applicants</span>
+                      {job.applications_count > 0 && (
+                        <Link to={`/recruiter/jobs/${job.id}/candidates`}>
+                          <Button size="sm" variant="outline" className="gap-1">
+                            <Sparkles className="w-3 h-3" /> Rank
+                          </Button>
+                        </Link>
+                      )}
                       <ChevronRight className="w-4 h-4 text-muted-foreground" />
                     </div>
                   </div>
