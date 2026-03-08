@@ -145,6 +145,13 @@ const RecruiterDashboard: React.FC = () => {
                         {job.status}
                       </Badge>
                       <span className="text-sm text-muted-foreground">{job.applications_count} applicants</span>
+                      {job.applications_count > 0 && (
+                        <Link to={`/recruiter/jobs/${job.id}/candidates`}>
+                          <Button size="sm" variant="outline" className="gap-1">
+                            <Sparkles className="w-3 h-3" /> Rank
+                          </Button>
+                        </Link>
+                      )}
                       <ChevronRight className="w-4 h-4 text-muted-foreground" />
                     </div>
                   </div>
