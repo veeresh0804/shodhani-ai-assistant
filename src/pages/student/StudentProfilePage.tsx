@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { User, Github, Code2, Linkedin, Save, CheckCircle2, Sparkles, Loader2, Star, Trophy, BookOpen, Target, Upload, FileText } from 'lucide-react';
+import { User, Github, Code2, Linkedin, Save, CheckCircle2, Sparkles, Loader2, Star, Trophy, BookOpen, Target, Upload, FileText, ScanSearch } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import ResumeSkillsDisplay from '@/components/student/ResumeSkillsDisplay';
 
 interface ProfileAnalysis {
   overall_score: number;
