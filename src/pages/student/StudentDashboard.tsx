@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Briefcase, FileSearch, CheckCircle2, Clock, TrendingUp,
-  ArrowRight, Building2, MapPin, Star, AlertCircle
+  ArrowRight, Building2, MapPin, Star, AlertCircle, Calendar, XCircle, Video
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
