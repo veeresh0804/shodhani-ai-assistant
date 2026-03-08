@@ -22,6 +22,8 @@ const Navbar: React.FC = () => {
       return [
         { path: '/recruiter/dashboard', label: 'Dashboard' },
         { path: '/recruiter/post-job', label: 'Post Job' },
+        { path: '/recruiter/analytics', label: 'Analytics' },
+        { path: '/recruiter/interviews', label: 'Interviews' },
       ];
     }
     if (userType === 'student') {
@@ -29,6 +31,7 @@ const Navbar: React.FC = () => {
         { path: '/student/dashboard', label: 'Dashboard' },
         { path: '/student/jobs', label: 'Browse Jobs' },
         { path: '/student/applications', label: 'My Applications' },
+        { path: '/student/interviews', label: 'Interviews' },
         { path: '/student/profile', label: 'My Profile' },
       ];
     }
