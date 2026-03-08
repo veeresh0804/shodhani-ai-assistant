@@ -22,6 +22,7 @@ import JobListingsPage from "./pages/student/JobListingsPage";
 import JobDetailPage from "./pages/student/JobDetailPage";
 import ApplicationsPage from "./pages/student/ApplicationsPage";
 import StudentProfilePage from "./pages/student/StudentProfilePage";
+import EligibilityCheckerPage from "./pages/student/EligibilityCheckerPage";
 
 const queryClient = new QueryClient();
 
