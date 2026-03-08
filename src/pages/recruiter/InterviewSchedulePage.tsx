@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Calendar, Clock, Video, Plus, Loader2, Trash2, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Video, Plus, Loader2, Trash2, ExternalLink, List, CalendarDays } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,11 +8,13 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
+import InterviewCalendarView from '@/components/recruiter/InterviewCalendarView';
 
 interface Interview {
   id: string;
@@ -247,54 +249,67 @@ const InterviewSchedulePage: React.FC = () => {
           </Card>
         )}
 
-        {interviews.length === 0 ? (
-          <Card className="glass-card">
-            <CardContent className="pt-6 text-center py-12">
-              <Calendar className="w-16 h-16 text-primary/30 mx-auto mb-4" />
-              <p className="text-muted-foreground">No interviews scheduled yet.</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-4">
-            {interviews.map(iv => (
-              <Card key={iv.id} className="glass-card-hover">
-                <CardContent className="pt-6">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2">
-                      <h3 className="font-semibold">{iv.student_name || 'Candidate'}</h3>
-                      <p className="text-sm text-muted-foreground">{iv.student_email}</p>
-                      <p className="text-sm text-muted-foreground">{iv.job_title}</p>
-                      <div className="flex items-center gap-3 text-sm">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {format(new Date(iv.scheduled_at), 'PPP')}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {format(new Date(iv.scheduled_at), 'p')} · {iv.duration_minutes}min
-                        </span>
-                      </div>
-                      {iv.meeting_link && (
-                        <a href={iv.meeting_link} target="_blank" rel="noopener noreferrer" className="text-sm text-primary flex items-center gap-1 hover:underline">
-                          <Video className="w-3 h-3" /> Join Meeting <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
-                      {iv.notes && <p className="text-xs text-muted-foreground bg-muted/50 rounded p-2">{iv.notes}</p>}
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <Badge className={statusColor(iv.status)}>{iv.status}</Badge>
-                      {iv.status === 'scheduled' && (
-                        <Button size="sm" variant="ghost" className="text-destructive gap-1" onClick={() => cancelInterview(iv.id)}>
-                          <Trash2 className="w-3 h-3" /> Cancel
-                        </Button>
-                      )}
-                    </div>
-                  </div>
+        <Tabs defaultValue="calendar" className="w-full">
+          <TabsList className="mb-6">
+            <TabsTrigger value="calendar" className="gap-2"><CalendarDays className="w-4 h-4" /> Calendar</TabsTrigger>
+            <TabsTrigger value="list" className="gap-2"><List className="w-4 h-4" /> List</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="calendar">
+            <InterviewCalendarView interviews={interviews} onCancel={cancelInterview} />
+          </TabsContent>
+
+          <TabsContent value="list">
+            {interviews.length === 0 ? (
+              <Card className="glass-card">
+                <CardContent className="pt-6 text-center py-12">
+                  <Calendar className="w-16 h-16 text-primary/30 mx-auto mb-4" />
+                  <p className="text-muted-foreground">No interviews scheduled yet.</p>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-        )}
+            ) : (
+              <div className="space-y-4">
+                {interviews.map(iv => (
+                  <Card key={iv.id} className="glass-card-hover">
+                    <CardContent className="pt-6">
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-2">
+                          <h3 className="font-semibold">{iv.student_name || 'Candidate'}</h3>
+                          <p className="text-sm text-muted-foreground">{iv.student_email}</p>
+                          <p className="text-sm text-muted-foreground">{iv.job_title}</p>
+                          <div className="flex items-center gap-3 text-sm">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              {format(new Date(iv.scheduled_at), 'PPP')}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {format(new Date(iv.scheduled_at), 'p')} · {iv.duration_minutes}min
+                            </span>
+                          </div>
+                          {iv.meeting_link && (
+                            <a href={iv.meeting_link} target="_blank" rel="noopener noreferrer" className="text-sm text-primary flex items-center gap-1 hover:underline">
+                              <Video className="w-3 h-3" /> Join Meeting <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                          {iv.notes && <p className="text-xs text-muted-foreground bg-muted/50 rounded p-2">{iv.notes}</p>}
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                          <Badge className={statusColor(iv.status)}>{iv.status}</Badge>
+                          {iv.status === 'scheduled' && (
+                            <Button size="sm" variant="ghost" className="text-destructive gap-1" onClick={() => cancelInterview(iv.id)}>
+                              <Trash2 className="w-3 h-3" /> Cancel
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
