@@ -40,6 +40,8 @@ const StudentProfilePage: React.FC = () => {
   const [existingAnalysis, setExistingAnalysis] = useState<ProfileAnalysis | null>(null);
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isParsing, setIsParsing] = useState(false);
+  const [resumeSkills, setResumeSkills] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
