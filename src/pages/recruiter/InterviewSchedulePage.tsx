@@ -241,6 +241,14 @@ const InterviewSchedulePage: React.FC = () => {
           </Dialog>
         </div>
 
+        {shortlisted.length === 0 && (
+          <Card className="glass-card mb-6">
+            <CardContent className="pt-6 text-center py-8">
+              <p className="text-muted-foreground">No shortlisted candidates yet. Shortlist candidates from the ranking page first.</p>
+            </CardContent>
+          </Card>
+        )}
+
         <Tabs defaultValue="calendar" className="w-full">
           <TabsList className="mb-6">
             <TabsTrigger value="calendar" className="gap-2"><CalendarDays className="w-4 h-4" /> Calendar</TabsTrigger>
