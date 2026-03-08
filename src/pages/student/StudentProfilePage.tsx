@@ -29,7 +29,7 @@ interface ExtractedData {
 }
 
 const StudentProfilePage: React.FC = () => {
-  const { studentProfile, refreshProfile } = useAuth();
+  const { user, studentProfile, refreshProfile } = useAuth();
   const { toast } = useToast();
 
   const [links, setLinks] = useState({ leetcode: '', github: '', linkedin: '' });
@@ -37,6 +37,9 @@ const StudentProfilePage: React.FC = () => {
   const [isExtracting, setIsExtracting] = useState(false);
   const [extracted, setExtracted] = useState<ExtractedData | null>(null);
   const [existingAnalysis, setExistingAnalysis] = useState<ProfileAnalysis | null>(null);
+  const [resumeUrl, setResumeUrl] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!studentProfile?.id) return;
