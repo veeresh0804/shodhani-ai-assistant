@@ -51,6 +51,8 @@ interface JobInfo {
   id: string;
   title: string;
   applications_count: number;
+  required_skills: string[];
+  preferred_skills: string[] | null;
 }
 
 const CandidateRankingPage: React.FC = () => {
@@ -73,11 +75,11 @@ const CandidateRankingPage: React.FC = () => {
     const fetchJob = async () => {
       const { data } = await supabase
         .from('jobs')
-        .select('id, title, applications_count')
+        .select('id, title, applications_count, required_skills, preferred_skills')
         .eq('id', jobId)
         .eq('recruiter_id', recruiterProfile.id)
         .maybeSingle();
-      if (data) setJob(data);
+      if (data) setJob(data as JobInfo);
       else {
         toast({ title: 'Job not found', variant: 'destructive' });
         navigate('/recruiter/dashboard');
@@ -157,6 +159,27 @@ const CandidateRankingPage: React.FC = () => {
       else next.add(appId);
       return next;
     });
+  };
+
+  const getSkillMatch = (candidate: RankedCandidate) => {
+    if (!job?.required_skills?.length || !candidate.resume_skills?.technical_skills?.length) return null;
+    const requiredLower = job.required_skills.map(s => s.toLowerCase().trim());
+    const candidateSkills = [
+      ...(candidate.resume_skills.technical_skills || []),
+      ...(candidate.resume_skills.skill_categories?.languages || []),
+      ...(candidate.resume_skills.skill_categories?.frameworks || []),
+      ...(candidate.resume_skills.skill_categories?.databases || []),
+      ...(candidate.resume_skills.skill_categories?.devops || []),
+      ...(candidate.resume_skills.skill_categories?.other || []),
+    ].map(s => s.toLowerCase().trim());
+    const matched = requiredLower.filter(rs => candidateSkills.some(cs => cs.includes(rs) || rs.includes(cs)));
+    return { matched: matched.length, total: requiredLower.length, pct: Math.round((matched.length / requiredLower.length) * 100) };
+  };
+
+  const skillMatchColor = (pct: number) => {
+    if (pct >= 75) return 'bg-green-100 text-green-800 border-green-300';
+    if (pct >= 50) return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+    return 'bg-red-100 text-red-800 border-red-300';
   };
 
   const scoreColor = (score: number) => {
@@ -259,11 +282,20 @@ const CandidateRankingPage: React.FC = () => {
                   <CardContent className="pt-6">
                     <div className="flex flex-col md:flex-row gap-4">
                       {/* Left: Rank & Score */}
-                      <div className="flex flex-col items-center gap-2 md:w-24 shrink-0">
+                      <div className="flex flex-col items-center gap-2 md:w-28 shrink-0">
                         {rankBadge(c.rank)}
                         <span className={`text-2xl font-bold ${scoreColor(c.score)}`}>{c.score}</span>
                         <Progress value={c.score} className="h-1.5 w-16" />
                         {statusBadge(c.status || 'pending')}
+                        {(() => {
+                          const match = getSkillMatch(c);
+                          return match ? (
+                            <Badge variant="outline" className={`text-xs font-semibold ${skillMatchColor(match.pct)}`}>
+                              {match.pct}% match
+                              <span className="font-normal ml-1">({match.matched}/{match.total})</span>
+                            </Badge>
+                          ) : null;
+                        })()}
                       </div>
 
                       {/* Right: Details */}
