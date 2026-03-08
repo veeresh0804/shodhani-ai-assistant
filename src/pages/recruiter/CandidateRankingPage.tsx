@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trophy, Star, AlertTriangle, ExternalLink, Loader2, Sparkles, GraduationCap, Github, Code2 } from 'lucide-react';
+import { ArrowLeft, Trophy, Star, AlertTriangle, ExternalLink, Loader2, Sparkles, GraduationCap, Github, Code2, CheckCircle, XCircle, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -26,6 +26,7 @@ interface RankedCandidate {
   github_url: string | null;
   leetcode_url: string | null;
   linkedin_url: string | null;
+  status?: string;
 }
 
 interface JobInfo {
@@ -46,6 +47,7 @@ const CandidateRankingPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRanking, setIsRanking] = useState(false);
   const [hasRanked, setHasRanked] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
   useEffect(() => {
     if (!jobId || !recruiterProfile?.id) return;
@@ -72,21 +74,34 @@ const CandidateRankingPage: React.FC = () => {
       const { data, error } = await supabase.functions.invoke('rank-candidates', {
         body: { job_id: jobId },
       });
-
       if (error) throw error;
       if (data?.error) {
         toast({ title: 'Ranking failed', description: data.error, variant: 'destructive' });
         return;
       }
-
-      setCandidates(data.candidates || []);
+      // Fetch current statuses for all applications
+      const appIds = (data.candidates || []).map((c: any) => c.application_id);
+      let statusMap: Record<string, string> = {};
+      if (appIds.length > 0) {
+        const { data: apps } = await supabase
+          .from('applications')
+          .select('id, status')
+          .in('id', appIds);
+        if (apps) {
+          statusMap = Object.fromEntries(apps.map((a) => [a.id, a.status]));
+        }
+      }
+      const enriched = (data.candidates || []).map((c: any) => ({
+        ...c,
+        status: statusMap[c.application_id] || 'pending',
+      }));
+      setCandidates(enriched);
       setSummary(data.summary || '');
       setHasRanked(true);
-
-      if (data.candidates?.length === 0) {
-        toast({ title: 'No applicants to rank yet', description: 'Wait for students to apply.' });
+      if (enriched.length === 0) {
+        toast({ title: 'No applicants to rank yet' });
       } else {
-        toast({ title: 'Ranking complete!', description: `${data.candidates.length} candidates ranked.` });
+        toast({ title: 'Ranking complete!', description: `${enriched.length} candidates ranked.` });
       }
     } catch (e: any) {
       console.error(e);
@@ -96,16 +111,30 @@ const CandidateRankingPage: React.FC = () => {
     }
   };
 
+  const updateApplicationStatus = async (applicationId: string, newStatus: string) => {
+    setUpdatingStatus(applicationId);
+    const { error } = await supabase
+      .from('applications')
+      .update({ status: newStatus })
+      .eq('id', applicationId);
+
+    if (error) {
+      toast({ title: 'Error updating status', description: error.message, variant: 'destructive' });
+    } else {
+      setCandidates((prev) =>
+        prev.map((c) =>
+          c.application_id === applicationId ? { ...c, status: newStatus } : c
+        )
+      );
+      toast({ title: `Candidate ${newStatus}`, description: `Application status updated to ${newStatus}.` });
+    }
+    setUpdatingStatus(null);
+  };
+
   const scoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600';
     if (score >= 60) return 'text-yellow-600';
     return 'text-red-500';
-  };
-
-  const scoreBg = (score: number) => {
-    if (score >= 80) return 'bg-green-500';
-    if (score >= 60) return 'bg-yellow-500';
-    return 'bg-red-500';
   };
 
   const rankBadge = (rank: number) => {
@@ -113,6 +142,18 @@ const CandidateRankingPage: React.FC = () => {
     if (rank === 2) return <Badge className="bg-gray-400 text-white gap-1"><Star className="w-3 h-3" /> #2</Badge>;
     if (rank === 3) return <Badge className="bg-orange-600 text-white gap-1"><Star className="w-3 h-3" /> #3</Badge>;
     return <Badge variant="outline">#{rank}</Badge>;
+  };
+
+  const statusBadge = (status: string) => {
+    switch (status) {
+      case 'shortlisted':
+        return <Badge className="bg-green-100 text-green-800 gap-1"><CheckCircle className="w-3 h-3" /> Shortlisted</Badge>;
+      case 'rejected':
+        return <Badge className="bg-red-100 text-red-800 gap-1"><XCircle className="w-3 h-3" /> Rejected</Badge>;
+      case 'pending':
+      default:
+        return <Badge variant="secondary" className="gap-1"><UserCheck className="w-3 h-3" /> Pending</Badge>;
+    }
   };
 
   if (isLoading) {
@@ -193,7 +234,8 @@ const CandidateRankingPage: React.FC = () => {
                       <div className="flex flex-col items-center gap-2 md:w-24 shrink-0">
                         {rankBadge(c.rank)}
                         <span className={`text-2xl font-bold ${scoreColor(c.score)}`}>{c.score}</span>
-                        <Progress value={c.score} className={`h-1.5 w-16 [&>div]:${scoreBg(c.score)}`} />
+                        <Progress value={c.score} className="h-1.5 w-16" />
+                        {statusBadge(c.status || 'pending')}
                       </div>
 
                       {/* Right: Details */}
@@ -233,7 +275,6 @@ const CandidateRankingPage: React.FC = () => {
                           <span>{c.degree} in {c.branch} — {c.institution} ({c.graduation_year})</span>
                         </div>
 
-                        {/* Strengths */}
                         {c.strengths.length > 0 && (
                           <div>
                             <p className="text-xs font-medium text-muted-foreground mb-1">Strengths</p>
@@ -245,7 +286,6 @@ const CandidateRankingPage: React.FC = () => {
                           </div>
                         )}
 
-                        {/* Gaps */}
                         {c.gaps.length > 0 && (
                           <div>
                             <p className="text-xs font-medium text-muted-foreground mb-1">Gaps</p>
@@ -259,8 +299,49 @@ const CandidateRankingPage: React.FC = () => {
                           </div>
                         )}
 
-                        {/* Recommendation */}
                         <p className="text-sm bg-muted/50 rounded-lg p-3 italic">{c.recommendation}</p>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-2 pt-2">
+                          <Button
+                            size="sm"
+                            className="gap-1 bg-green-600 hover:bg-green-700 text-white"
+                            disabled={c.status === 'shortlisted' || updatingStatus === c.application_id}
+                            onClick={() => updateApplicationStatus(c.application_id, 'shortlisted')}
+                          >
+                            {updatingStatus === c.application_id ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <CheckCircle className="w-3 h-3" />
+                            )}
+                            Shortlist
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="gap-1 text-red-600 border-red-300 hover:bg-red-50"
+                            disabled={c.status === 'rejected' || updatingStatus === c.application_id}
+                            onClick={() => updateApplicationStatus(c.application_id, 'rejected')}
+                          >
+                            {updatingStatus === c.application_id ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <XCircle className="w-3 h-3" />
+                            )}
+                            Reject
+                          </Button>
+                          {c.status !== 'pending' && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="gap-1 text-muted-foreground"
+                              disabled={updatingStatus === c.application_id}
+                              onClick={() => updateApplicationStatus(c.application_id, 'pending')}
+                            >
+                              Reset
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </CardContent>
