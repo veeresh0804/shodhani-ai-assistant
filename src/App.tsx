@@ -13,6 +13,7 @@ import RecruiterLogin from "./pages/recruiter/RecruiterLogin";
 import RecruiterRegister from "./pages/recruiter/RecruiterRegister";
 import RecruiterDashboard from "./pages/recruiter/RecruiterDashboard";
 import PostJobPage from "./pages/recruiter/PostJobPage";
+import CandidateRankingPage from "./pages/recruiter/CandidateRankingPage";
 
 import StudentLogin from "./pages/student/StudentLogin";
 import StudentRegister from "./pages/student/StudentRegister";
