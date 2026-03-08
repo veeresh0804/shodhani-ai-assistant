@@ -87,6 +87,7 @@ const Navbar: React.FC = () => {
                   </Link>
                 ))}
 
+                <NotificationBell />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="gap-2 ml-2">
