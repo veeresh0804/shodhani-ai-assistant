@@ -112,11 +112,13 @@ const NotificationBell: React.FC = () => {
       <PopoverContent className="w-80 p-0" align="end">
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
           <h4 className="font-semibold text-sm">Notifications</h4>
-          {unreadCount > 0 && (
-            <Button variant="ghost" size="sm" className="text-xs gap-1 h-7" onClick={markAllRead}>
-              <CheckCheck className="w-3 h-3" /> Mark all read
-            </Button>
-          )}
+          <div className="flex items-center gap-1">
+            {unreadCount > 0 && (
+              <Button variant="ghost" size="sm" className="text-xs gap-1 h-7" onClick={markAllRead}>
+                <CheckCheck className="w-3 h-3" /> Mark all read
+              </Button>
+            )}
+          </div>
         </div>
         <ScrollArea className="max-h-80">
           {notifications.length === 0 ? (
