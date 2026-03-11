@@ -43,9 +43,15 @@ serve(async (req) => {
       .download(student.resume_url);
     if (downloadError || !fileData) throw new Error("Failed to download resume: " + (downloadError?.message || "Unknown error"));
 
-    // Convert file to base64 for AI processing
+    // Convert file to base64 for AI processing (chunked to avoid stack overflow)
     const arrayBuffer = await fileData.arrayBuffer();
-    const base64Content = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+    const bytes = new Uint8Array(arrayBuffer);
+    let binary = "";
+    const chunkSize = 8192;
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+    }
+    const base64Content = btoa(binary);
     const mimeType = student.resume_url.endsWith(".pdf") ? "application/pdf" : "application/octet-stream";
 
     // Send to AI for skill extraction using multimodal (PDF as inline_data)
