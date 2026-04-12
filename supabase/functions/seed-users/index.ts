@@ -17,32 +17,29 @@ Deno.serve(async (req) => {
 
     const demoPassword = "Demo@1234";
 
-    // Demo accounts to create
     const accounts = [
-      // Students
-      { email: "aarav.sharma@iitd.ac.in", password: demoPassword, role: "student", table: "students", nameField: "name", nameMatch: "Aarav Sharma" },
-      { email: "priya.patel@bits.ac.in", password: demoPassword, role: "student", table: "students", nameField: "name", nameMatch: "Priya Patel" },
-      { email: "rohit.kumar@iiith.ac.in", password: demoPassword, role: "student", table: "students", nameField: "name", nameMatch: "Rohit Kumar" },
-      // Recruiters
-      { email: "recruiter@tcs.com", password: demoPassword, role: "recruiter", table: "recruiters", nameField: "recruiter_name", nameMatch: "Rajesh Iyer" },
-      { email: "recruiter@zomato.com", password: demoPassword, role: "recruiter", table: "recruiters", nameField: "recruiter_name", nameMatch: "Ananya Desai" },
-      { email: "recruiter@sudheeai.com", password: demoPassword, role: "recruiter", table: "recruiters", nameField: "recruiter_name", nameMatch: "Sudhee Mohan" },
-      // Admin
-      { email: "admin@hirehub.com", password: demoPassword, role: "admin", table: null, nameField: null, nameMatch: null },
+      // 3 Students
+      { email: "aarav.kumar86@iit.ac.in", role: "student", table: "students", nameField: "name", nameMatch: "Aarav Kumar" },
+      { email: "aditi.chatterjee85@iit.ac.in", role: "student", table: "students", nameField: "name", nameMatch: "Aditi Chatterjee" },
+      { email: "aditya.patel24@iit.ac.in", role: "student", table: "students", nameField: "name", nameMatch: "Aditya Patel" },
+      // 3 Recruiters
+      { email: "priya.sharma@tcs.com", role: "recruiter", table: "recruiters", nameField: "recruiter_name", nameMatch: "Priya Sharma" },
+      { email: "sneha.kapoor@zomato.com", role: "recruiter", table: "recruiters", nameField: "recruiter_name", nameMatch: "Sneha Kapoor" },
+      { email: "rahul.verma@sudheeai.com", role: "recruiter", table: "recruiters", nameField: "recruiter_name", nameMatch: "Rahul Verma" },
+      // 1 Admin
+      { email: "admin@hirehub.com", role: "admin", table: null, nameField: null, nameMatch: null },
     ];
 
     const results = [];
 
     for (const acct of accounts) {
-      // Create auth user
       const { data: userData, error: createError } = await admin.auth.admin.createUser({
         email: acct.email,
-        password: acct.password,
+        password: demoPassword,
         email_confirm: true,
       });
 
       if (createError) {
-        // User might already exist
         results.push({ email: acct.email, status: "skipped", error: createError.message });
         continue;
       }
@@ -52,25 +49,22 @@ Deno.serve(async (req) => {
       // Assign role
       await admin.from("user_roles").insert({ user_id: userId, role: acct.role });
 
-      // Link to existing record
-      if (acct.table && acct.nameMatch) {
-        await admin.from(acct.table).update({ user_id: userId, email: acct.email })
-          .eq(acct.nameField!, acct.nameMatch);
+      // Link to existing profile record
+      if (acct.table && acct.nameMatch && acct.nameField) {
+        const { error: updateError } = await admin.from(acct.table)
+          .update({ user_id: userId })
+          .eq(acct.nameField, acct.nameMatch);
         
-        // If student, also update related records
-        if (acct.table === "students") {
-          const { data: student } = await admin.from("students").select("id").eq("user_id", userId).maybeSingle();
-          if (student) {
-            // Update applications, interviews, notifications
-            await admin.from("student_profiles").update({ student_id: student.id }).eq("student_id", student.id);
-          }
+        if (updateError) {
+          results.push({ email: acct.email, status: "created_no_link", userId, error: updateError.message });
+          continue;
         }
       }
 
       results.push({ email: acct.email, status: "created", userId });
     }
 
-    return new Response(JSON.stringify({ results }), {
+    return new Response(JSON.stringify({ results, password: demoPassword }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
