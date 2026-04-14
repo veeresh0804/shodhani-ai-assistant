@@ -114,6 +114,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "interviews_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications_student_view"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "interviews_job_id_fkey"
             columns: ["job_id"]
             isOneToOne: false
@@ -403,7 +410,48 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      applications_student_view: {
+        Row: {
+          applied_at: string | null
+          id: string | null
+          job_id: string | null
+          status: string | null
+          student_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          applied_at?: string | null
+          id?: string | null
+          job_id?: string | null
+          status?: string | null
+          student_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          applied_at?: string | null
+          id?: string | null
+          job_id?: string | null
+          status?: string | null
+          student_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       has_role: {
