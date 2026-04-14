@@ -67,6 +67,7 @@ const StudentLogin: React.FC = () => {
           </form>
 
           <CardFooter className="flex flex-col space-y-4">
+            <Link to="/forgot-password" className="text-sm text-primary hover:underline text-center">Forgot password?</Link>
             <p className="text-sm text-muted-foreground text-center">
               Don't have an account? <Link to="/student/register" className="text-primary hover:underline">Register</Link>
             </p>
