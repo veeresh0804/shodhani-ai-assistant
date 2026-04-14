@@ -66,12 +66,29 @@ Deno.serve(async (req) => {
       .maybeSingle();
     if (!profile) throw new Error("Student profile links not found. Please save your profile first.");
 
+    // --- URL Validation (SSRF Prevention) ---
+    const ALLOWED_DOMAINS: Record<string, string[]> = {
+      github: ["github.com", "www.github.com"],
+      leetcode: ["leetcode.com", "www.leetcode.com"],
+      linkedin: ["linkedin.com", "www.linkedin.com", "in.linkedin.com"],
+    };
+
+    function isValidProfileUrl(url: string, allowedDomains: string[]): boolean {
+      try {
+        const parsed = new URL(url);
+        if (parsed.protocol !== "https:") return false;
+        return allowedDomains.some((d) => parsed.hostname === d);
+      } catch {
+        return false;
+      }
+    }
+
     const githubUrl = profile.github_url;
     const leetcodeUrl = profile.leetcode_url;
 
     // --- GitHub Extraction ---
     let githubData: any = null;
-    if (githubUrl) {
+    if (githubUrl && isValidProfileUrl(githubUrl, ALLOWED_DOMAINS.github)) {
       const username = githubUrl.replace(/\/$/, "").split("/").pop();
       if (username) {
         try {
