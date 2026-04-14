@@ -146,7 +146,7 @@ Deno.serve(async (req) => {
 
     // --- LeetCode Extraction ---
     let leetcodeData: any = null;
-    if (leetcodeUrl) {
+    if (leetcodeUrl && isValidProfileUrl(leetcodeUrl, ALLOWED_DOMAINS.leetcode)) {
       const username = leetcodeUrl.replace(/\/$/, "").split("/").pop();
       if (username) {
         try {
