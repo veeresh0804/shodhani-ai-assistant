@@ -41,7 +41,7 @@ const ForgotPasswordPage: React.FC = () => {
             <CardDescription>
               {sent
                 ? 'A reset link has been sent to your email.'
-                : 'Enter your email and we'll send you a reset link.'}
+                : "Enter your email and we'll send you a reset link."}
             </CardDescription>
           </CardHeader>
 
