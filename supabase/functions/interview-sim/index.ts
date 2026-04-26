@@ -61,7 +61,7 @@ Rules:
     });
   } catch (e) {
     console.error("interview-sim error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : String(e) }), {
+    return new Response(JSON.stringify({ error: "Failed to run interview simulation" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
