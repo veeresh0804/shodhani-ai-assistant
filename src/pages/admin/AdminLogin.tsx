@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 
 const AdminLogin: React.FC = () => {
@@ -61,6 +61,11 @@ const AdminLogin: React.FC = () => {
             <div className="space-y-2">
               <Label className="flex items-center gap-2"><Lock className="w-4 h-4" /> Password</Label>
               <Input type="password" required value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" />
+            </div>
+            <div className="flex justify-end">
+              <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+                Forgot password?
+              </Link>
             </div>
             <Button type="submit" className="btn-primary w-full" disabled={isLoading}>
               {isLoading ? <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Signing in...</> : 'Sign In'}
