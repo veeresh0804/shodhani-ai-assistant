@@ -1,13 +1,10 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
-
+import { corsHeaders, errorResponse, internalError, newRequestId } from "../_shared/errors.ts";
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  const requestId = newRequestId();
 
   try {
     const authHeader = req.headers.get("Authorization");
@@ -186,14 +183,10 @@ Deno.serve(async (req) => {
       const errText = await aiResponse.text();
       console.error("AI gateway error:", status, errText);
       if (status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded, please try again later." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return errorResponse({ fn: "parse-resume", code: "rate_limited", message: "Rate limit exceeded, please try again later.", requestId });
       }
       if (status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return errorResponse({ fn: "parse-resume", code: "payment_required", message: "AI credits exhausted.", requestId });
       }
       throw new Error("AI resume parsing failed");
     }
@@ -218,10 +211,6 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (e) {
-    console.error("parse-resume error:", e);
-    return new Response(
-      JSON.stringify({ error: "Failed to parse resume" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return internalError("parse-resume", e, "Failed to parse resume", requestId);
   }
 });

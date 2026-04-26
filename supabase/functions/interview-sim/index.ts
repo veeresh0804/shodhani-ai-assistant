@@ -1,12 +1,10 @@
 
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
+import { corsHeaders, errorResponse, internalError, newRequestId } from "../_shared/errors.ts";
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  const requestId = newRequestId();
 
   try {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -51,8 +49,8 @@ Rules:
 
     if (!response.ok) {
       const status = response.status;
-      if (status === 429) return new Response(JSON.stringify({ error: "Rate limited, try again later." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      if (status === 402) return new Response(JSON.stringify({ error: "Payment required." }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      if (status === 429) return errorResponse({ fn: "interview-sim", code: "rate_limited", message: "Rate limited, try again later.", requestId });
+      if (status === 402) return errorResponse({ fn: "interview-sim", code: "payment_required", message: "Payment required.", requestId });
       throw new Error(`AI gateway error: ${status}`);
     }
 
@@ -60,10 +58,6 @@ Rules:
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (e) {
-    console.error("interview-sim error:", e);
-    return new Response(JSON.stringify({ error: "Failed to run interview simulation" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return internalError("interview-sim", e, "Failed to run interview simulation", requestId);
   }
 });

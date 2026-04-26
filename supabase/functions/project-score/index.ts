@@ -1,12 +1,10 @@
 
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
+import { corsHeaders, errorResponse, internalError, newRequestId } from "../_shared/errors.ts";
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  const requestId = newRequestId();
 
   try {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -66,8 +64,8 @@ Limit to top 8 projects. Return ONLY valid JSON, no markdown.`;
 
     if (!response.ok) {
       const status = response.status;
-      if (status === 429) return new Response(JSON.stringify({ error: "Rate limited, try again later." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      if (status === 402) return new Response(JSON.stringify({ error: "Payment required." }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      if (status === 429) return errorResponse({ fn: "project-score", code: "rate_limited", message: "Rate limited, try again later.", requestId });
+      if (status === 402) return errorResponse({ fn: "project-score", code: "payment_required", message: "Payment required.", requestId });
       throw new Error(`AI gateway error: ${status}`);
     }
 
@@ -80,10 +78,6 @@ Limit to top 8 projects. Return ONLY valid JSON, no markdown.`;
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
-    console.error("project-score error:", e);
-    return new Response(JSON.stringify({ error: "Failed to score project" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return internalError("project-score", e, "Failed to score project", requestId);
   }
 });
