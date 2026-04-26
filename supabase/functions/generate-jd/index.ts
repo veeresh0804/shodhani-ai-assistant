@@ -1,15 +1,11 @@
 
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
-
+import { corsHeaders, errorResponse, internalError, newRequestId } from "../_shared/errors.ts";
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const requestId = newRequestId();
     const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
     if (!lovableApiKey) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -77,9 +73,6 @@ Create a comprehensive, professional job description.`,
     const result = JSON.parse(toolCall.function.arguments);
     return new Response(JSON.stringify(result), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
-    console.error("generate-jd error:", e);
-    return new Response(JSON.stringify({ error: "Failed to generate job description" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return internalError("generate-jd", e, "Failed to generate job description");
   }
 });
