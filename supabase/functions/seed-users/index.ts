@@ -69,7 +69,7 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     console.error("seed-users error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : String(e) }), {
+    return new Response(JSON.stringify({ error: "Failed to seed users" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

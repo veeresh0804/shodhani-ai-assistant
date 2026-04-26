@@ -78,7 +78,7 @@ Create a comprehensive, professional job description.`,
     return new Response(JSON.stringify(result), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     console.error("generate-jd error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    return new Response(JSON.stringify({ error: "Failed to generate job description" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

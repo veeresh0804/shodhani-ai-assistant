@@ -90,7 +90,7 @@ Return ONLY valid JSON, no markdown.`;
     });
   } catch (e) {
     console.error("portfolio-build error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : String(e) }), {
+    return new Response(JSON.stringify({ error: "Failed to build portfolio" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

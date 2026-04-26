@@ -137,7 +137,7 @@ Create a personalized 6-month roadmap with specific monthly goals, resources, an
     return new Response(JSON.stringify(result), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     console.error("career-path error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    return new Response(JSON.stringify({ error: "Failed to generate career path" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

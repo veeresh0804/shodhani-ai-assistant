@@ -65,7 +65,7 @@ Rules:
     });
   } catch (e) {
     console.error("recruiter-agent error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : String(e) }), {
+    return new Response(JSON.stringify({ error: "Failed to run recruiter agent" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

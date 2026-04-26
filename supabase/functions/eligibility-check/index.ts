@@ -203,7 +203,7 @@ Provide:
   } catch (e) {
     console.error("eligibility-check error:", e);
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
+      JSON.stringify({ error: "Failed to check eligibility" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

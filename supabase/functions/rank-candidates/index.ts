@@ -238,7 +238,7 @@ Candidates with resume_skills data that closely match the job's required_skills 
   } catch (e) {
     console.error("rank-candidates error:", e);
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
+      JSON.stringify({ error: "Failed to rank candidates" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
