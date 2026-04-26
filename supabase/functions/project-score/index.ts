@@ -81,7 +81,7 @@ Limit to top 8 projects. Return ONLY valid JSON, no markdown.`;
     });
   } catch (e) {
     console.error("project-score error:", e);
-    return new Response(JSON.stringify({ error: e.message }), {
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : String(e) }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
