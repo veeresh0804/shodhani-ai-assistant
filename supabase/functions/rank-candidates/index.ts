@@ -181,14 +181,10 @@ Candidates with resume_skills data that closely match the job's required_skills 
       const errText = await aiResponse.text();
       console.error("AI gateway error:", status, errText);
       if (status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded, please try again later." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return errorResponse({ fn: "rank-candidates", code: "rate_limited", message: "Rate limit exceeded, please try again later.", requestId });
       }
       if (status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted. Please add funds." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return errorResponse({ fn: "rank-candidates", code: "payment_required", message: "AI credits exhausted. Please add funds.", requestId });
       }
       throw new Error("AI analysis failed");
     }

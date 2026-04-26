@@ -262,14 +262,10 @@ Deno.serve(async (req) => {
       const errText = await aiResponse.text();
       console.error("AI gateway error:", status, errText);
       if (status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded, please try again later." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return errorResponse({ fn: "extract-profile", code: "rate_limited", message: "Rate limit exceeded, please try again later.", requestId });
       }
       if (status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return errorResponse({ fn: "extract-profile", code: "payment_required", message: "AI credits exhausted.", requestId });
       }
       throw new Error("AI analysis failed");
     }

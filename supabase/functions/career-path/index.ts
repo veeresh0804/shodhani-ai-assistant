@@ -121,8 +121,8 @@ Create a personalized 6-month roadmap with specific monthly goals, resources, an
 
     if (!aiResponse.ok) {
       const status = aiResponse.status;
-      if (status === 429) return new Response(JSON.stringify({ error: "Rate limit exceeded." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      if (status === 402) return new Response(JSON.stringify({ error: "AI credits exhausted." }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      if (status === 429) return errorResponse({ fn: "career-path", code: "rate_limited", message: "Rate limit exceeded.", requestId });
+      if (status === 402) return errorResponse({ fn: "career-path", code: "payment_required", message: "AI credits exhausted.", requestId });
       throw new Error("AI generation failed");
     }
 
