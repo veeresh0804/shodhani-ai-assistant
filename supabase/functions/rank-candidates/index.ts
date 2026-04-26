@@ -4,8 +4,9 @@ import { corsHeaders, errorResponse, internalError, newRequestId } from "../_sha
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const requestId = newRequestId();
+
   try {
-    const requestId = newRequestId();
     const authHeader = req.headers.get("Authorization");
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -232,6 +233,6 @@ Candidates with resume_skills data that closely match the job's required_skills 
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (e) {
-    return internalError("rank-candidates", e, "Failed to rank candidates");
+    return internalError("rank-candidates", e, "Failed to rank candidates", requestId);
   }
 });

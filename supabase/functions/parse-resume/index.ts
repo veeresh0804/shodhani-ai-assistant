@@ -4,8 +4,9 @@ import { corsHeaders, errorResponse, internalError, newRequestId } from "../_sha
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const requestId = newRequestId();
+
   try {
-    const requestId = newRequestId();
     const authHeader = req.headers.get("Authorization");
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -214,6 +215,6 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (e) {
-    return internalError("parse-resume", e, "Failed to parse resume");
+    return internalError("parse-resume", e, "Failed to parse resume", requestId);
   }
 });

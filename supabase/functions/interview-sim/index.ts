@@ -4,8 +4,9 @@ import { corsHeaders, errorResponse, internalError, newRequestId } from "../_sha
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const requestId = newRequestId();
+
   try {
-    const requestId = newRequestId();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
@@ -57,6 +58,6 @@ Rules:
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (e) {
-    return internalError("interview-sim", e, "Failed to run interview simulation");
+    return internalError("interview-sim", e, "Failed to run interview simulation", requestId);
   }
 });

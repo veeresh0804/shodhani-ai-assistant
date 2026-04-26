@@ -4,8 +4,9 @@ import { corsHeaders, errorResponse, internalError, newRequestId } from "../_sha
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const requestId = newRequestId();
+
   try {
-    const requestId = newRequestId();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
@@ -86,6 +87,6 @@ Return ONLY valid JSON, no markdown.`;
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
-    return internalError("portfolio-build", e, "Failed to build portfolio");
+    return internalError("portfolio-build", e, "Failed to build portfolio", requestId);
   }
 });

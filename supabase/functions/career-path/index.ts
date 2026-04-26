@@ -4,8 +4,9 @@ import { corsHeaders, errorResponse, internalError, newRequestId } from "../_sha
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const requestId = newRequestId();
+
   try {
-    const requestId = newRequestId();
     const authHeader = req.headers.get("Authorization");
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -132,6 +133,6 @@ Create a personalized 6-month roadmap with specific monthly goals, resources, an
     const result = JSON.parse(toolCall.function.arguments);
     return new Response(JSON.stringify(result), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
-    return internalError("career-path", e, "Failed to generate career path");
+    return internalError("career-path", e, "Failed to generate career path", requestId);
   }
 });

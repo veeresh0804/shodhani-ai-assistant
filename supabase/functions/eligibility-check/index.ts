@@ -4,8 +4,9 @@ import { corsHeaders, errorResponse, internalError, newRequestId } from "../_sha
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const requestId = newRequestId();
+
   try {
-    const requestId = newRequestId();
     const authHeader = req.headers.get("Authorization");
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -197,6 +198,6 @@ Provide:
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
-    return internalError("eligibility-check", e, "Failed to check eligibility");
+    return internalError("eligibility-check", e, "Failed to check eligibility", requestId);
   }
 });
