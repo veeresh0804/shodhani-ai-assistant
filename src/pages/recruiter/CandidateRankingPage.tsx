@@ -398,7 +398,7 @@ const CandidateRankingPage: React.FC = () => {
                                 )}
                                 {c.resume_skills.skill_categories && (
                                   <div className="grid grid-cols-2 gap-2">
-                                    {c.resume_skills.skill_categories.languages && c.resume_skills.skill_categories.languages.length > 0 && (
+                                    {c.resume_skills?.skill_categories?.languages && c.resume_skills.skill_categories.languages.length > 0 && (
                                       <div>
                                         <p className="text-xs font-medium text-muted-foreground mb-1">Languages</p>
                                         <div className="flex flex-wrap gap-1">
@@ -408,7 +408,7 @@ const CandidateRankingPage: React.FC = () => {
                                         </div>
                                       </div>
                                     )}
-                                    {c.resume_skills.skill_categories.frameworks && c.resume_skills.skill_categories.frameworks.length > 0 && (
+                                    {c.resume_skills?.skill_categories?.frameworks && c.resume_skills.skill_categories.frameworks.length > 0 && (
                                       <div>
                                         <p className="text-xs font-medium text-muted-foreground mb-1">Frameworks</p>
                                         <div className="flex flex-wrap gap-1">
@@ -418,7 +418,7 @@ const CandidateRankingPage: React.FC = () => {
                                         </div>
                                       </div>
                                     )}
-                                    {c.resume_skills.skill_categories.databases && c.resume_skills.skill_categories.databases.length > 0 && (
+                                    {c.resume_skills?.skill_categories?.databases && c.resume_skills.skill_categories.databases.length > 0 && (
                                       <div>
                                         <p className="text-xs font-medium text-muted-foreground mb-1">Databases</p>
                                         <div className="flex flex-wrap gap-1">
@@ -428,7 +428,7 @@ const CandidateRankingPage: React.FC = () => {
                                         </div>
                                       </div>
                                     )}
-                                    {c.resume_skills.skill_categories.devops && c.resume_skills.skill_categories.devops.length > 0 && (
+                                    {c.resume_skills?.skill_categories?.devops && c.resume_skills.skill_categories.devops.length > 0 && (
                                       <div>
                                         <p className="text-xs font-medium text-muted-foreground mb-1">DevOps</p>
                                         <div className="flex flex-wrap gap-1">
@@ -459,7 +459,7 @@ const CandidateRankingPage: React.FC = () => {
                                           <span className="font-medium">{p.name}</span>
                                           <span className="text-muted-foreground"> — {p.description}</span>
                                           <div className="flex flex-wrap gap-1 mt-1">
-                                            {p.technologies.map((t, j) => (
+                                            {(p.technologies ?? []).map((t, j) => (
                                               <Badge key={j} variant="secondary" className="text-xs py-0">{t}</Badge>
                                             ))}
                                           </div>

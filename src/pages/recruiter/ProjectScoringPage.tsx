@@ -188,7 +188,7 @@ const ProjectScoringPage: React.FC = () => {
                         ))}
                       </div>
                       <div className="flex flex-wrap gap-1">
-                        {proj.languages.map((l, j) => (
+                        {(proj.languages ?? []).map((l, j) => (
                           <Badge key={j} variant="outline" className="text-xs">{l}</Badge>
                         ))}
                       </div>

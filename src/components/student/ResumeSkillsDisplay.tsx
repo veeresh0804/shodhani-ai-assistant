@@ -60,75 +60,86 @@ const ResumeSkillsDisplay: React.FC<Props> = ({ skills }) => {
 
       {/* Skill Categories */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {skills.skill_categories.languages.length > 0 && (
-          <Card className="glass-card">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Code2 className="w-4 h-4 text-primary" /> Languages
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-1.5">
-                {skills.skill_categories.languages.map((s, i) => (
-                  <Badge key={i} className="badge-primary text-xs">{s}</Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-        {skills.skill_categories.frameworks.length > 0 && (
-          <Card className="glass-card">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Layers className="w-4 h-4 text-primary" /> Frameworks
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-1.5">
-                {skills.skill_categories.frameworks.map((s, i) => (
-                  <Badge key={i} variant="secondary" className="text-xs">{s}</Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-        {skills.skill_categories.databases.length > 0 && (
-          <Card className="glass-card">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Briefcase className="w-4 h-4 text-primary" /> Databases
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-1.5">
-                {skills.skill_categories.databases.map((s, i) => (
-                  <Badge key={i} variant="outline" className="text-xs">{s}</Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-        {skills.skill_categories.devops.length > 0 && (
-          <Card className="glass-card">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Briefcase className="w-4 h-4 text-primary" /> DevOps & Tools
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-1.5">
-                {skills.skill_categories.devops.map((s, i) => (
-                  <Badge key={i} variant="outline" className="text-xs">{s}</Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {(() => {
+          const cats = skills.skill_categories ?? { languages: [], frameworks: [], databases: [], devops: [], other: [] };
+          const languages = cats.languages ?? [];
+          const frameworks = cats.frameworks ?? [];
+          const databases = cats.databases ?? [];
+          const devops = cats.devops ?? [];
+          return (
+            <>
+              {languages.length > 0 && (
+                <Card className="glass-card">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Code2 className="w-4 h-4 text-primary" /> Languages
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-1.5">
+                      {languages.map((s, i) => (
+                        <Badge key={i} className="badge-primary text-xs">{s}</Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              {frameworks.length > 0 && (
+                <Card className="glass-card">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-primary" /> Frameworks
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-1.5">
+                      {frameworks.map((s, i) => (
+                        <Badge key={i} variant="secondary" className="text-xs">{s}</Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              {databases.length > 0 && (
+                <Card className="glass-card">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Briefcase className="w-4 h-4 text-primary" /> Databases
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-1.5">
+                      {databases.map((s, i) => (
+                        <Badge key={i} variant="outline" className="text-xs">{s}</Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              {devops.length > 0 && (
+                <Card className="glass-card">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Briefcase className="w-4 h-4 text-primary" /> DevOps & Tools
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-1.5">
+                      {devops.map((s, i) => (
+                        <Badge key={i} variant="outline" className="text-xs">{s}</Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </>
+          );
+        })()}
       </div>
 
       {/* Soft Skills & Certifications */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {skills.soft_skills.length > 0 && (
+        {(skills.soft_skills ?? []).length > 0 && (
           <Card className="glass-card">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
@@ -137,14 +148,14 @@ const ResumeSkillsDisplay: React.FC<Props> = ({ skills }) => {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-1.5">
-                {skills.soft_skills.map((s, i) => (
+                {(skills.soft_skills ?? []).map((s, i) => (
                   <Badge key={i} className="bg-green-100 text-green-800 text-xs">{s}</Badge>
                 ))}
               </div>
             </CardContent>
           </Card>
         )}
-        {skills.certifications.length > 0 && (
+        {(skills.certifications ?? []).length > 0 && (
           <Card className="glass-card">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
@@ -153,7 +164,7 @@ const ResumeSkillsDisplay: React.FC<Props> = ({ skills }) => {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-1.5">
-                {skills.certifications.map((s, i) => (
+                {(skills.certifications ?? []).map((s, i) => (
                   <Badge key={i} variant="outline" className="text-orange-600 border-orange-300 text-xs">{s}</Badge>
                 ))}
               </div>
@@ -163,7 +174,7 @@ const ResumeSkillsDisplay: React.FC<Props> = ({ skills }) => {
       </div>
 
       {/* Projects */}
-      {skills.projects.length > 0 && (
+      {(skills.projects ?? []).length > 0 && (
         <Card className="glass-card mb-6">
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
@@ -171,12 +182,12 @@ const ResumeSkillsDisplay: React.FC<Props> = ({ skills }) => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {skills.projects.map((project, i) => (
+            {(skills.projects ?? []).map((project, i) => (
               <div key={i} className="border-b border-border/50 last:border-0 pb-3 last:pb-0">
                 <h4 className="font-medium text-sm">{project.name}</h4>
                 <p className="text-xs text-muted-foreground mt-1">{project.description}</p>
                 <div className="flex flex-wrap gap-1 mt-2">
-                  {project.technologies.map((tech, j) => (
+                  {(project.technologies ?? []).map((tech, j) => (
                     <Badge key={j} variant="secondary" className="text-xs">{tech}</Badge>
                   ))}
                 </div>
