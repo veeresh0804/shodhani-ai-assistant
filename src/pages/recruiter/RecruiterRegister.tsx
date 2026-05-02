@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { checkPasswordStrength } from '@/lib/validation';
 
 const RecruiterRegister: React.FC = () => {
   const navigate = useNavigate();
@@ -29,6 +30,11 @@ const RecruiterRegister: React.FC = () => {
     }
     if (formData.password.length < 8) {
       toast({ title: 'Password must be at least 8 characters', variant: 'destructive' });
+      return;
+    }
+    const strength = checkPasswordStrength(formData.password);
+    if (strength.score < 2) {
+      toast({ title: 'Password too weak', description: 'Use uppercase, numbers, or symbols.', variant: 'destructive' });
       return;
     }
     if (formData.password !== formData.confirmPassword) {
@@ -150,6 +156,24 @@ const RecruiterRegister: React.FC = () => {
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
+                {formData.password && (() => {
+                  const strength = checkPasswordStrength(formData.password);
+                  return (
+                    <div className="space-y-1.5 mt-1.5">
+                      <div className="flex gap-1">
+                        {[1,2,3,4].map(level => (
+                          <div key={`str-${level}`} className={`h-1 flex-1 rounded-full transition-colors ${
+                            strength.score >= level ? strength.color : 'bg-muted'
+                          }`} />
+                        ))}
+                      </div>
+                      <p className={`text-xs ${strength.score <= 1 ? 'text-red-500' : strength.score === 2 ? 'text-yellow-500' : 'text-green-500'}`}>
+                        {strength.label}
+                        {strength.score < 3 && ' — add uppercase, number, or symbol'}
+                      </p>
+                    </div>
+                  );
+                })()}
               </div>
 
               <div className="space-y-2">
