@@ -1,0 +1,1 @@
+UPDATE public.jobs SET recruiter_id = '46203b07-fa7f-469b-9ac1-34124346cb57' WHERE id = '03b6ef06-8309-4777-9796-e9ee69fe5e25';

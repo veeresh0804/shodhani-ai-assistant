@@ -1,0 +1,37 @@
+project_id = "llwexqpavwrkokstuedy"
+
+[functions.rank-candidates]
+verify_jwt = false
+
+[functions.eligibility-check]
+verify_jwt = false
+
+[functions.extract-profile]
+verify_jwt = false
+
+[functions.parse-resume]
+verify_jwt = false
+
+[functions.generate-jd]
+verify_jwt = false
+
+[functions.career-path]
+verify_jwt = false
+
+[functions.authenticity-check]
+verify_jwt = false
+
+[functions.project-score]
+verify_jwt = false
+
+[functions.bias-detect]
+verify_jwt = false
+
+[functions.portfolio-build]
+verify_jwt = false
+
+[functions.interview-sim]
+verify_jwt = false
+
+[functions.recruiter-agent]
+verify_jwt = false
