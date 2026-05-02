@@ -62,6 +62,10 @@ const JobDetailPage: React.FC = () => {
       toast({ title: 'Please complete your profile first', variant: 'destructive' });
       return;
     }
+    if (!studentProfile.profile_complete) {
+      toast({ title: 'Incomplete profile', description: 'Please complete your profile before applying.', variant: 'destructive' });
+      return;
+    }
     setIsApplying(true);
     const { error } = await supabase.from('applications').insert({
       job_id: jobId,
@@ -117,7 +121,7 @@ const JobDetailPage: React.FC = () => {
             <div>
               <h3 className="font-semibold mb-2">Required Skills</h3>
               <div className="flex flex-wrap gap-2">
-                {job.required_skills.map((skill: string) => (
+                {(job.required_skills ?? []).map((skill: string) => (
                   <Badge key={skill} className="badge-primary">{skill}</Badge>
                 ))}
               </div>

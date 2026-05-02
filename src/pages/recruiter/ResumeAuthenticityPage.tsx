@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { describeEdgeError } from '@/lib/edgeError';
+import { logger } from '@/lib/logger';
 
 interface StudentEntry {
   id: string;
@@ -62,7 +63,7 @@ const ResumeAuthenticityPage: React.FC = () => {
       if (data?.error) throw new Error(JSON.stringify(data));
       setResult(data);
     } catch (e: unknown) {
-      console.error(e);
+      logger.error(e);
       toast({ title: 'Error', description: describeEdgeError(e), variant: 'destructive' });
     } finally {
       setIsChecking(false);

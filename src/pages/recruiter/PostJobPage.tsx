@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { describeEdgeError } from '@/lib/edgeError';
+import { logger } from '@/lib/logger';
 
 const PostJobPage: React.FC = () => {
   const navigate = useNavigate();
@@ -62,7 +63,7 @@ const PostJobPage: React.FC = () => {
       }));
       toast({ title: 'JD generated!', description: 'Review and edit the generated description.' });
     } catch (e: unknown) {
-      console.error(e);
+      logger.error(e);
       toast({ title: 'Error', description: describeEdgeError(e), variant: 'destructive' });
     } finally {
       setIsGenerating(false);
@@ -89,7 +90,8 @@ const PostJobPage: React.FC = () => {
       return;
     }
     if (!recruiterProfile?.id) {
-      toast({ title: 'Recruiter profile not found', variant: 'destructive' });
+      toast({ title: 'Recruiter profile not found', description: 'Please log in again.', variant: 'destructive' });
+      navigate('/recruiter/login');
       return;
     }
 

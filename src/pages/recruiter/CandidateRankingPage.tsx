@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { describeEdgeError } from '@/lib/edgeError';
+import { logger } from '@/lib/logger';
 
 interface ResumeSkills {
   technical_skills?: string[];
@@ -126,7 +127,7 @@ const CandidateRankingPage: React.FC = () => {
         toast({ title: 'Ranking complete!', description: `${enriched.length} candidates ranked.` });
       }
     } catch (e: any) {
-      console.error(e);
+      logger.error(e);
       toast({ title: 'Error', description: e.message || 'Failed to rank candidates', variant: 'destructive' });
     } finally {
       setIsRanking(false);

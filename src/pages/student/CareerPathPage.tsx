@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { describeEdgeError } from '@/lib/edgeError';
+import { logger } from '@/lib/logger';
 
 interface MonthlyPlan {
   month: number;
@@ -53,7 +54,7 @@ const CareerPathPage: React.FC = () => {
       setCareerPath(data);
       toast({ title: 'Career path generated!' });
     } catch (e: unknown) {
-      console.error(e);
+      logger.error(e);
       toast({ title: 'Error', description: describeEdgeError(e), variant: 'destructive' });
     } finally {
       setIsGenerating(false);

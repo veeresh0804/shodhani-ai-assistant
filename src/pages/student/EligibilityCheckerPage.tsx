@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { describeEdgeError } from '@/lib/edgeError';
+import { logger } from '@/lib/logger';
 
 interface Resource {
   title: string;
@@ -55,7 +56,7 @@ const EligibilityCheckerPage: React.FC = () => {
       setResult(data);
       setHasChecked(true);
     } catch (e: unknown) {
-      console.error(e);
+      logger.error(e);
       toast({ title: 'Error', description: describeEdgeError(e), variant: 'destructive' });
     } finally {
       setIsChecking(false);

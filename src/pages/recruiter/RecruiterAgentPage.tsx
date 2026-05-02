@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import ReactMarkdown from 'react-markdown';
 import { describeEdgeError, parseEdgeError } from '@/lib/edgeError';
+import { logger } from '@/lib/logger';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
@@ -116,7 +117,7 @@ const RecruiterAgentPage: React.FC = () => {
         }
       }
     } catch (e: unknown) {
-      console.error(e);
+      logger.error(e);
       toast({ title: 'Error', description: describeEdgeError(e), variant: 'destructive' });
     } finally {
       setIsStreaming(false);

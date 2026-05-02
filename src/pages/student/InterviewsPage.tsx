@@ -33,19 +33,20 @@ const InterviewsPage: React.FC = () => {
 
       if (data && data.length > 0) {
         const jobIds = [...new Set(data.map(d => d.job_id))];
-        const recruiterIds = [...new Set(data.map(d => d.recruiter_id))];
 
-        const [{ data: jobs }, { data: recruiters }] = await Promise.all([
-          supabase.from('jobs').select('id, title').in('id', jobIds),
-          supabase.from('recruiters').select('id, company_name').in('id', recruiterIds),
-        ]);
+        const { data: jobs } = await supabase
+          .from('jobs')
+          .select('id, title, recruiters(company_name)')
+          .in('id', jobIds);
 
-        // Recruiters table has RLS that only allows own profile, so we may not get data
-        const enriched = data.map(iv => ({
-          ...iv,
-          job_title: jobs?.find(j => j.id === iv.job_id)?.title || 'Position',
-          company_name: recruiters?.find(r => r.id === iv.recruiter_id)?.company_name || 'Company',
-        }));
+        const enriched = data.map(iv => {
+          const job = (jobs as any[])?.find(j => j.id === iv.job_id);
+          return {
+            ...iv,
+            job_title: job?.title || 'Position',
+            company_name: job?.recruiters?.company_name || 'Company',
+          };
+        });
         setInterviews(enriched);
       }
       setIsLoading(false);

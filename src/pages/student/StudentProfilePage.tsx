@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import ResumeSkillsDisplay from '@/components/student/ResumeSkillsDisplay';
 import { describeEdgeError } from '@/lib/edgeError';
+import { logger } from '@/lib/logger';
 
 interface ProfileAnalysis {
   overall_score: number;
@@ -54,21 +55,22 @@ const StudentProfilePage: React.FC = () => {
       .maybeSingle()
       .then(({ data }) => {
         if (data) {
+          const d = data as Record<string, any>;
           setLinks({
-            leetcode: (data as any).leetcode_url || '',
-            github: (data as any).github_url || '',
-            linkedin: (data as any).linkedin_url || '',
+            leetcode: d.leetcode_url || '',
+            github: d.github_url || '',
+            linkedin: d.linkedin_url || '',
           });
-          if ((data as any).gemini_analysis && Object.keys((data as any).gemini_analysis).length > 0) {
-            setExistingAnalysis((data as any).gemini_analysis as unknown as ProfileAnalysis);
+          if (d.gemini_analysis && Object.keys(d.gemini_analysis).length > 0) {
+            setExistingAnalysis(d.gemini_analysis as unknown as ProfileAnalysis);
             setExtracted({
-              github_data: (data as any).github_data,
-              leetcode_data: (data as any).leetcode_data,
-              analysis: (data as any).gemini_analysis as unknown as ProfileAnalysis,
+              github_data: d.github_data,
+              leetcode_data: d.leetcode_data,
+              analysis: d.gemini_analysis as unknown as ProfileAnalysis,
             });
           }
-          if ((data as any).resume_skills && Object.keys((data as any).resume_skills).length > 0) {
-            setResumeSkills((data as any).resume_skills);
+          if (d.resume_skills && Object.keys(d.resume_skills).length > 0) {
+            setResumeSkills(d.resume_skills);
           }
         }
       });
@@ -117,7 +119,7 @@ const StudentProfilePage: React.FC = () => {
       setResumeSkills(data.resume_skills);
       toast({ title: 'Resume parsed!', description: 'AI has extracted skills from your resume.' });
     } catch (e: unknown) {
-      console.error(e);
+      logger.error(e);
       toast({ title: 'Error', description: describeEdgeError(e), variant: 'destructive' });
     } finally {
       setIsParsing(false);
@@ -165,7 +167,7 @@ const StudentProfilePage: React.FC = () => {
       setExistingAnalysis(data.analysis);
       toast({ title: 'Profile analyzed!', description: 'AI has analyzed your GitHub and LeetCode profiles.' });
     } catch (e: unknown) {
-      console.error(e);
+      logger.error(e);
       toast({ title: 'Error', description: describeEdgeError(e), variant: 'destructive' });
     } finally {
       setIsExtracting(false);

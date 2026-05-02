@@ -73,7 +73,10 @@ const StudentRegister: React.FC = () => {
       // Create empty student_profiles entry for extracted data
       const { data: studentRow } = await supabase.from('students').select('id').eq('user_id', user.id).single();
       if (studentRow) {
-        await supabase.from('student_profiles').insert({ student_id: studentRow.id });
+        const { error: spError } = await supabase.from('student_profiles').insert({ student_id: studentRow.id });
+        if (spError) {
+          toast({ title: 'Warning', description: 'Profile created but skill extraction setup failed. You can set it up later from your profile page.' });
+        }
       }
 
       toast({ title: 'Registration successful!' });

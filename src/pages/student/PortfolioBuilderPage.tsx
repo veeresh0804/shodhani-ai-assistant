@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { describeEdgeError } from '@/lib/edgeError';
+import { logger } from '@/lib/logger';
 
 const PortfolioBuilderPage: React.FC = () => {
   const { studentProfile } = useAuth();
@@ -40,7 +41,7 @@ const PortfolioBuilderPage: React.FC = () => {
       if (data?.error) throw new Error(JSON.stringify(data));
       setPortfolio(data);
     } catch (e: unknown) {
-      console.error(e);
+      logger.error(e);
       toast({ title: 'Generation failed', description: describeEdgeError(e), variant: 'destructive' });
     } finally {
       setIsGenerating(false);
