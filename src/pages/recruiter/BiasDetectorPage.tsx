@@ -147,7 +147,7 @@ const BiasDetectorPage: React.FC = () => {
                 <CardContent>
                   <div className="space-y-4">
                     {result.findings.map((f: any, i: number) => (
-                      <div key={i} className="p-4 rounded-lg border border-border">
+                      <div key={`bias-${i}`} className="p-4 rounded-lg border border-border">
                         <div className="flex items-center gap-2 mb-2">
                           <Badge className={severityBadge(f.severity)}>{f.severity}</Badge>
                           <Badge variant="outline" className="capitalize">{f.category}</Badge>
@@ -178,7 +178,7 @@ const BiasDetectorPage: React.FC = () => {
                 <CardContent>
                   <div className="space-y-4">
                     {result.rewritten_sections.map((s: any, i: number) => (
-                      <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div key={`sug-${i}`} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="p-3 rounded-lg bg-destructive/5 border border-destructive/20">
                           <p className="text-xs font-semibold text-destructive mb-1 flex items-center gap-1"><XCircle className="w-3 h-3" /> Original</p>
                           <p className="text-sm">{s.original}</p>

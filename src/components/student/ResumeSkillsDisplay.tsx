@@ -78,7 +78,7 @@ const ResumeSkillsDisplay: React.FC<Props> = ({ skills }) => {
                   <CardContent>
                     <div className="flex flex-wrap gap-1.5">
                       {languages.map((s, i) => (
-                        <Badge key={i} className="badge-primary text-xs">{s}</Badge>
+                        <Badge key={`lang-${s}-${i}`} className="badge-primary text-xs">{s}</Badge>
                       ))}
                     </div>
                   </CardContent>
@@ -94,7 +94,7 @@ const ResumeSkillsDisplay: React.FC<Props> = ({ skills }) => {
                   <CardContent>
                     <div className="flex flex-wrap gap-1.5">
                       {frameworks.map((s, i) => (
-                        <Badge key={i} variant="secondary" className="text-xs">{s}</Badge>
+                        <Badge key={`fw-${s}-${i}`} variant="secondary" className="text-xs">{s}</Badge>
                       ))}
                     </div>
                   </CardContent>
@@ -110,7 +110,7 @@ const ResumeSkillsDisplay: React.FC<Props> = ({ skills }) => {
                   <CardContent>
                     <div className="flex flex-wrap gap-1.5">
                       {databases.map((s, i) => (
-                        <Badge key={i} variant="outline" className="text-xs">{s}</Badge>
+                        <Badge key={`db-${s}-${i}`} variant="outline" className="text-xs">{s}</Badge>
                       ))}
                     </div>
                   </CardContent>
@@ -126,7 +126,7 @@ const ResumeSkillsDisplay: React.FC<Props> = ({ skills }) => {
                   <CardContent>
                     <div className="flex flex-wrap gap-1.5">
                       {devops.map((s, i) => (
-                        <Badge key={i} variant="outline" className="text-xs">{s}</Badge>
+                        <Badge key={`dv-${s}-${i}`} variant="outline" className="text-xs">{s}</Badge>
                       ))}
                     </div>
                   </CardContent>
@@ -149,7 +149,7 @@ const ResumeSkillsDisplay: React.FC<Props> = ({ skills }) => {
             <CardContent>
               <div className="flex flex-wrap gap-1.5">
                 {(skills.soft_skills ?? []).map((s, i) => (
-                  <Badge key={i} className="bg-green-100 text-green-800 text-xs">{s}</Badge>
+                  <Badge key={`ss-${s}-${i}`} className="bg-green-100 text-green-800 text-xs">{s}</Badge>
                 ))}
               </div>
             </CardContent>
@@ -165,7 +165,7 @@ const ResumeSkillsDisplay: React.FC<Props> = ({ skills }) => {
             <CardContent>
               <div className="flex flex-wrap gap-1.5">
                 {(skills.certifications ?? []).map((s, i) => (
-                  <Badge key={i} variant="outline" className="text-orange-600 border-orange-300 text-xs">{s}</Badge>
+                  <Badge key={`cert-${s}-${i}`} variant="outline" className="text-orange-600 border-orange-300 text-xs">{s}</Badge>
                 ))}
               </div>
             </CardContent>
@@ -183,12 +183,12 @@ const ResumeSkillsDisplay: React.FC<Props> = ({ skills }) => {
           </CardHeader>
           <CardContent className="space-y-4">
             {(skills.projects ?? []).map((project, i) => (
-              <div key={i} className="border-b border-border/50 last:border-0 pb-3 last:pb-0">
+              <div key={`proj-${project.name}-${i}`} className="border-b border-border/50 last:border-0 pb-3 last:pb-0">
                 <h4 className="font-medium text-sm">{project.name}</h4>
                 <p className="text-xs text-muted-foreground mt-1">{project.description}</p>
                 <div className="flex flex-wrap gap-1 mt-2">
                   {(project.technologies ?? []).map((tech, j) => (
-                    <Badge key={j} variant="secondary" className="text-xs">{tech}</Badge>
+                    <Badge key={`tech-${tech}-${j}`} variant="secondary" className="text-xs">{tech}</Badge>
                   ))}
                 </div>
               </div>

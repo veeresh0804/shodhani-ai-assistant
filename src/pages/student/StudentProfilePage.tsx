@@ -332,7 +332,7 @@ const StudentProfilePage: React.FC = () => {
                 <CardContent>
                   <div className="flex flex-wrap gap-1.5">
                     {analysis.strengths.map((s, i) => (
-                      <Badge key={i} className="bg-green-100 text-green-800 text-xs">{s}</Badge>
+                      <Badge key={`str-${s}-${i}`} className="bg-green-100 text-green-800 text-xs">{s}</Badge>
                     ))}
                   </div>
                 </CardContent>
@@ -346,7 +346,7 @@ const StudentProfilePage: React.FC = () => {
                 <CardContent>
                   <div className="flex flex-wrap gap-1.5">
                     {analysis.areas_to_improve.map((a, i) => (
-                      <Badge key={i} variant="outline" className="text-orange-600 border-orange-300 text-xs">{a}</Badge>
+                      <Badge key={`imp-${a}-${i}`} variant="outline" className="text-orange-600 border-orange-300 text-xs">{a}</Badge>
                     ))}
                   </div>
                 </CardContent>
@@ -363,7 +363,7 @@ const StudentProfilePage: React.FC = () => {
               <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {analysis.technical_skills.map((skill, i) => (
-                    <Badge key={i} className="badge-primary">{skill}</Badge>
+                    <Badge key={`skill-${skill}-${i}`} className="badge-primary">{skill}</Badge>
                   ))}
                 </div>
               </CardContent>
@@ -381,7 +381,7 @@ const StudentProfilePage: React.FC = () => {
                   <Progress value={analysis.github_assessment.score} className="h-1.5 mb-3" />
                   <ul className="space-y-1">
                     {analysis.github_assessment.highlights.map((h, i) => (
-                      <li key={i} className="text-xs text-muted-foreground flex items-start gap-1">
+                      <li key={`gh-${i}`} className="text-xs text-muted-foreground flex items-start gap-1">
                         <span className="text-primary mt-0.5">•</span> {h}
                       </li>
                     ))}
@@ -398,7 +398,7 @@ const StudentProfilePage: React.FC = () => {
                   <Progress value={analysis.leetcode_assessment.score} className="h-1.5 mb-3" />
                   <ul className="space-y-1">
                     {analysis.leetcode_assessment.highlights.map((h, i) => (
-                      <li key={i} className="text-xs text-muted-foreground flex items-start gap-1">
+                      <li key={`lc-${i}`} className="text-xs text-muted-foreground flex items-start gap-1">
                         <span className="text-primary mt-0.5">•</span> {h}
                       </li>
                     ))}
@@ -417,7 +417,7 @@ const StudentProfilePage: React.FC = () => {
               <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {analysis.recommended_roles.map((role, i) => (
-                    <Badge key={i} variant="secondary">{role}</Badge>
+                    <Badge key={`role-${role}-${i}`} variant="secondary">{role}</Badge>
                   ))}
                 </div>
               </CardContent>

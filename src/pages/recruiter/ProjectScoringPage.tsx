@@ -158,7 +158,7 @@ const ProjectScoringPage: React.FC = () => {
                         <p className="text-sm text-muted-foreground">{result.summary}</p>
                         <div className="flex flex-wrap gap-1 mt-2">
                           {result.top_technologies.map((t, i) => (
-                            <Badge key={i} className="badge-primary text-xs">{t}</Badge>
+                            <Badge key={`tech-${t}-${i}`} className="badge-primary text-xs">{t}</Badge>
                           ))}
                         </div>
                       </div>
@@ -168,7 +168,7 @@ const ProjectScoringPage: React.FC = () => {
 
                 {/* Projects */}
                 {result.projects.map((proj, i) => (
-                  <Card key={i} className="glass-card">
+                  <Card key={`proj-${i}`} className="glass-card">
                     <CardContent className="pt-6">
                       <div className="flex items-start justify-between mb-3">
                         <div>
@@ -190,7 +190,7 @@ const ProjectScoringPage: React.FC = () => {
                       </div>
                       <div className="flex flex-wrap gap-1">
                         {(proj.languages ?? []).map((l, j) => (
-                          <Badge key={j} variant="outline" className="text-xs">{l}</Badge>
+                          <Badge key={`lang-${l}-${j}`} variant="outline" className="text-xs">{l}</Badge>
                         ))}
                       </div>
                     </CardContent>

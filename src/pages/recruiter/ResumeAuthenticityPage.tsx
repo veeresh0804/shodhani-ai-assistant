@@ -168,7 +168,7 @@ const ResumeAuthenticityPage: React.FC = () => {
                   <CardContent>
                     <div className="space-y-2">
                       {result.signals.map((sig, i) => (
-                        <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-muted/30">
+                        <div key={`check-${i}`} className="flex items-start gap-2 p-2 rounded-lg bg-muted/30">
                           {signalIcon(sig.type)}
                           <div>
                             <Badge variant="outline" className="text-xs mb-1 capitalize">{sig.category}</Badge>
@@ -188,7 +188,7 @@ const ResumeAuthenticityPage: React.FC = () => {
                     <CardContent>
                       <ul className="space-y-1">
                         {result.recommendations.map((r, i) => (
-                          <li key={i} className="text-sm flex items-start gap-2">
+                          <li key={`rec-${i}`} className="text-sm flex items-start gap-2">
                             <span className="text-primary mt-0.5">•</span> {r}
                           </li>
                         ))}

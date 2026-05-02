@@ -139,7 +139,7 @@ const PortfolioBuilderPage: React.FC = () => {
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {portfolio.projects.map((p: any, i: number) => (
-                      <div key={i} className="p-4 rounded-lg border border-border hover:border-primary/30 transition-colors">
+                      <div key={`proj-${i}`} className="p-4 rounded-lg border border-border hover:border-primary/30 transition-colors">
                         <h4 className="font-semibold mb-1">{p.name}</h4>
                         <p className="text-sm text-muted-foreground mb-3">{p.description}</p>
                         <div className="flex flex-wrap gap-1 mb-2">
@@ -164,7 +164,7 @@ const PortfolioBuilderPage: React.FC = () => {
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {portfolio.achievements.map((a: any, i: number) => (
-                      <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
+                      <div key={`tip-${i}`} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
                         {iconMap[a.icon] || <Star className="w-5 h-5 text-primary" />}
                         <div>
                           <p className="font-medium text-sm">{a.title}</p>

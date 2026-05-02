@@ -138,7 +138,7 @@ const CareerPathPage: React.FC = () => {
                 <CardContent>
                   <div className="flex flex-wrap gap-1.5">
                     {careerPath.existing_strengths.map((s, i) => (
-                      <Badge key={i} variant="secondary" className="text-xs">{s}</Badge>
+                      <Badge key={`skill-${s}-${i}`} variant="secondary" className="text-xs">{s}</Badge>
                     ))}
                   </div>
                 </CardContent>
@@ -150,7 +150,7 @@ const CareerPathPage: React.FC = () => {
                 <CardContent>
                   <div className="flex flex-wrap gap-1.5">
                     {careerPath.skill_gaps.map((s, i) => (
-                      <Badge key={i} variant="outline" className="text-xs">{s}</Badge>
+                      <Badge key={`gap-${s}-${i}`} variant="outline" className="text-xs">{s}</Badge>
                     ))}
                   </div>
                 </CardContent>
@@ -177,7 +177,7 @@ const CareerPathPage: React.FC = () => {
                       <p className="text-xs font-medium text-muted-foreground mb-1">Goals</p>
                       <ul className="space-y-1">
                         {month.goals.map((g, i) => (
-                          <li key={i} className="text-sm flex items-start gap-2">
+                          <li key={`task-${i}`} className="text-sm flex items-start gap-2">
                             <ChevronRight className="w-3 h-3 text-primary mt-1 shrink-0" /> {g}
                           </li>
                         ))}
@@ -187,7 +187,7 @@ const CareerPathPage: React.FC = () => {
                       <p className="text-xs font-medium text-muted-foreground mb-1">Resources</p>
                       <div className="flex flex-wrap gap-1.5">
                         {month.resources.map((r, i) => (
-                          <Badge key={i} variant="secondary" className="text-xs">{r}</Badge>
+                          <Badge key={`res-${r}-${i}`} variant="secondary" className="text-xs">{r}</Badge>
                         ))}
                       </div>
                     </div>
@@ -212,7 +212,7 @@ const CareerPathPage: React.FC = () => {
                   <CardContent>
                     <ul className="space-y-1">
                       {careerPath.recommended_certifications.map((c, i) => (
-                        <li key={i} className="text-sm flex items-start gap-2">
+                        <li key={`tip-${i}`} className="text-sm flex items-start gap-2">
                           <ChevronRight className="w-3 h-3 text-primary mt-1 shrink-0" /> {c}
                         </li>
                       ))}
@@ -230,7 +230,7 @@ const CareerPathPage: React.FC = () => {
                   <CardContent>
                     <ul className="space-y-1">
                       {careerPath.interview_tips.map((t, i) => (
-                        <li key={i} className="text-sm flex items-start gap-2">
+                        <li key={`next-${i}`} className="text-sm flex items-start gap-2">
                           <ChevronRight className="w-3 h-3 text-primary mt-1 shrink-0" /> {t}
                         </li>
                       ))}

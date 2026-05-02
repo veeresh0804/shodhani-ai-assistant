@@ -149,7 +149,7 @@ const TalentRadarPage: React.FC = () => {
             <CardContent>
               <div className="space-y-3">
                 {topSkills.slice(0, 12).map((s, i) => (
-                  <div key={i} className="flex items-center gap-3">
+                  <div key={`demand-${i}`} className="flex items-center gap-3">
                     <span className="text-xs font-mono text-muted-foreground w-5">{i + 1}</span>
                     <span className="text-sm font-medium flex-1">{s.skill}</span>
                     <span className="text-xs text-muted-foreground">{s.count} students</span>
@@ -191,7 +191,7 @@ const TalentRadarPage: React.FC = () => {
             <CardContent>
               <div className="space-y-2">
                 {institutions.map((inst, i) => (
-                  <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-muted/30">
+                  <div key={`insight-${i}`} className="flex items-center justify-between p-2 rounded-lg bg-muted/30">
                     <span className="text-sm font-medium">{inst.name}</span>
                     <Badge variant="outline">{inst.count} students</Badge>
                   </div>
@@ -209,7 +209,7 @@ const TalentRadarPage: React.FC = () => {
             <CardContent>
               <div className="space-y-2">
                 {degreeDist.map((d, i) => (
-                  <div key={i} className="flex items-center gap-3">
+                  <div key={`rec-${i}`} className="flex items-center gap-3">
                     <span className="text-sm font-medium flex-1">{d.degree}</span>
                     <Progress value={(d.count / totalStudents) * 100} className="h-1.5 w-24" />
                     <Badge variant="outline">{d.count}</Badge>

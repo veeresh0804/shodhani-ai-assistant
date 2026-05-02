@@ -17,6 +17,18 @@ interface Job {
   created_at: string;
 }
 
+/** Fetch live application counts per job instead of relying on a stored column. */
+async function fetchLiveCounts(jobIds: string[]): Promise<Record<string, number>> {
+  if (jobIds.length === 0) return {};
+  const { data } = await supabase
+    .from('applications')
+    .select('job_id')
+    .in('job_id', jobIds);
+  const counts: Record<string, number> = {};
+  (data ?? []).forEach(row => { counts[row.job_id] = (counts[row.job_id] || 0) + 1; });
+  return counts;
+}
+
 const RecruiterDashboard: React.FC = () => {
   const { recruiterProfile } = useAuth();
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -27,10 +39,12 @@ const RecruiterDashboard: React.FC = () => {
     const fetchJobs = async () => {
       const { data } = await supabase
         .from('jobs')
-        .select('id, title, location, job_type, status, applications_count, created_at')
+        .select('id, title, location, job_type, status, created_at')
         .eq('recruiter_id', recruiterProfile.id)
         .order('created_at', { ascending: false });
-      setJobs(data || []);
+      const rawJobs = (data || []) as Omit<Job, 'applications_count'>[];
+      const counts = await fetchLiveCounts(rawJobs.map(j => j.id));
+      setJobs(rawJobs.map(j => ({ ...j, applications_count: counts[j.id] || 0 })));
       setIsLoading(false);
     };
     fetchJobs();

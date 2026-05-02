@@ -157,7 +157,7 @@ const EligibilityCheckerPage: React.FC = () => {
                   {result.matched_skills.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
                       {result.matched_skills.map((s, i) => (
-                        <Badge key={i} className="bg-green-100 text-green-800">{s}</Badge>
+                        <Badge key={`match-${s}-${i}`} className="bg-green-100 text-green-800">{s}</Badge>
                       ))}
                     </div>
                   ) : (
@@ -176,7 +176,7 @@ const EligibilityCheckerPage: React.FC = () => {
                   {result.missing_skills.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
                       {result.missing_skills.map((s, i) => (
-                        <Badge key={i} variant="outline" className="text-red-600 border-red-300">{s}</Badge>
+                        <Badge key={`gap-${s}-${i}`} variant="outline" className="text-red-600 border-red-300">{s}</Badge>
                       ))}
                     </div>
                   ) : (
@@ -196,7 +196,7 @@ const EligibilityCheckerPage: React.FC = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {result.roadmap.map((item, i) => (
-                    <div key={i} className="border border-border rounded-lg p-4 space-y-3">
+                    <div key={`res-${i}`} className="border border-border rounded-lg p-4 space-y-3">
                       <div className="flex items-center justify-between">
                         <h4 className="font-semibold">{item.skill}</h4>
                         <div className="flex items-center gap-2">
@@ -210,7 +210,7 @@ const EligibilityCheckerPage: React.FC = () => {
                       {item.resources.length > 0 && (
                         <div className="space-y-1.5">
                           {item.resources.map((res, j) => (
-                            <div key={j} className="flex items-center gap-2 text-sm">
+                            <div key={`step-${j}`} className="flex items-center gap-2 text-sm">
                               <Badge variant="secondary" className="text-xs shrink-0">{res.type}</Badge>
                               {res.url ? (
                                 <a href={res.url} target="_blank" rel="noopener noreferrer"
@@ -241,7 +241,7 @@ const EligibilityCheckerPage: React.FC = () => {
                 <CardContent>
                   <ul className="space-y-2">
                     {result.tips.map((tip, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm">
+                      <li key={`tip-${i}`} className="flex items-start gap-2 text-sm">
                         <span className="text-primary font-bold mt-0.5">•</span>
                         <span>{tip}</span>
                       </li>

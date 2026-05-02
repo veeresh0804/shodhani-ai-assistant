@@ -186,7 +186,7 @@ const InterviewSimPage: React.FC = () => {
               <CardContent className="pt-4 pb-4 max-h-[500px] overflow-y-auto">
                 <div className="space-y-4">
                   {messages.map((msg, i) => (
-                    <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
+                    <div key={`msg-${i}`} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
                       {msg.role === 'assistant' && (
                         <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
                           <Bot className="w-4 h-4 text-primary" />

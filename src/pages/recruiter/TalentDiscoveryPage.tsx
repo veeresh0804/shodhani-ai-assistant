@@ -226,7 +226,7 @@ const TalentDiscoveryPage: React.FC = () => {
                     {t.technical_skills.length > 0 && (
                       <div className="flex flex-wrap gap-1.5">
                         {t.technical_skills.slice(0, 12).map((s, i) => (
-                          <Badge key={i} className="badge-primary text-xs">{s}</Badge>
+                          <Badge key={`skill-${s}-${i}`} className="badge-primary text-xs">{s}</Badge>
                         ))}
                         {t.technical_skills.length > 12 && (
                           <Badge variant="outline" className="text-xs">+{t.technical_skills.length - 12} more</Badge>

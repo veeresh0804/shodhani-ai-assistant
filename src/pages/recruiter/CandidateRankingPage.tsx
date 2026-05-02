@@ -342,7 +342,7 @@ const CandidateRankingPage: React.FC = () => {
                             <p className="text-xs font-medium text-muted-foreground mb-1">Strengths</p>
                             <div className="flex flex-wrap gap-1.5">
                               {c.strengths.map((s, i) => (
-                                <Badge key={i} className="bg-green-100 text-green-800 text-xs">{s}</Badge>
+                                <Badge key={`match-${s}-${i}`} className="bg-green-100 text-green-800 text-xs">{s}</Badge>
                               ))}
                             </div>
                           </div>
@@ -353,7 +353,7 @@ const CandidateRankingPage: React.FC = () => {
                             <p className="text-xs font-medium text-muted-foreground mb-1">Gaps</p>
                             <div className="flex flex-wrap gap-1.5">
                               {c.gaps.map((g, i) => (
-                                <Badge key={i} variant="outline" className="text-orange-600 border-orange-300 text-xs gap-1">
+                                <Badge key={`gap-${i}`} variant="outline" className="text-orange-600 border-orange-300 text-xs gap-1">
                                   <AlertTriangle className="w-3 h-3" />{g}
                                 </Badge>
                               ))}
@@ -392,7 +392,7 @@ const CandidateRankingPage: React.FC = () => {
                                     <p className="text-xs font-medium text-muted-foreground mb-1">Technical Skills</p>
                                     <div className="flex flex-wrap gap-1">
                                       {c.resume_skills.technical_skills.map((s, i) => (
-                                        <Badge key={i} className="badge-primary text-xs">{s}</Badge>
+                                        <Badge key={`ts-${s}-${i}`} className="badge-primary text-xs">{s}</Badge>
                                       ))}
                                     </div>
                                   </div>
@@ -404,7 +404,7 @@ const CandidateRankingPage: React.FC = () => {
                                         <p className="text-xs font-medium text-muted-foreground mb-1">Languages</p>
                                         <div className="flex flex-wrap gap-1">
                                           {c.resume_skills.skill_categories.languages.map((s, i) => (
-                                            <Badge key={i} variant="secondary" className="text-xs">{s}</Badge>
+                                            <Badge key={`lang-${s}-${i}`} variant="secondary" className="text-xs">{s}</Badge>
                                           ))}
                                         </div>
                                       </div>
@@ -414,7 +414,7 @@ const CandidateRankingPage: React.FC = () => {
                                         <p className="text-xs font-medium text-muted-foreground mb-1">Frameworks</p>
                                         <div className="flex flex-wrap gap-1">
                                           {c.resume_skills.skill_categories.frameworks.map((s, i) => (
-                                            <Badge key={i} variant="secondary" className="text-xs">{s}</Badge>
+                                            <Badge key={`fw-${s}-${i}`} variant="secondary" className="text-xs">{s}</Badge>
                                           ))}
                                         </div>
                                       </div>
@@ -424,7 +424,7 @@ const CandidateRankingPage: React.FC = () => {
                                         <p className="text-xs font-medium text-muted-foreground mb-1">Databases</p>
                                         <div className="flex flex-wrap gap-1">
                                           {c.resume_skills.skill_categories.databases.map((s, i) => (
-                                            <Badge key={i} variant="outline" className="text-xs">{s}</Badge>
+                                            <Badge key={`db-${s}-${i}`} variant="outline" className="text-xs">{s}</Badge>
                                           ))}
                                         </div>
                                       </div>
@@ -434,7 +434,7 @@ const CandidateRankingPage: React.FC = () => {
                                         <p className="text-xs font-medium text-muted-foreground mb-1">DevOps</p>
                                         <div className="flex flex-wrap gap-1">
                                           {c.resume_skills.skill_categories.devops.map((s, i) => (
-                                            <Badge key={i} variant="outline" className="text-xs">{s}</Badge>
+                                            <Badge key={`dv-${s}-${i}`} variant="outline" className="text-xs">{s}</Badge>
                                           ))}
                                         </div>
                                       </div>
@@ -446,7 +446,7 @@ const CandidateRankingPage: React.FC = () => {
                                     <p className="text-xs font-medium text-muted-foreground mb-1">Certifications</p>
                                     <div className="flex flex-wrap gap-1">
                                       {c.resume_skills.certifications.map((s, i) => (
-                                        <Badge key={i} variant="outline" className="text-xs">{s}</Badge>
+                                        <Badge key={`ss-${s}-${i}`} variant="outline" className="text-xs">{s}</Badge>
                                       ))}
                                     </div>
                                   </div>
@@ -456,12 +456,12 @@ const CandidateRankingPage: React.FC = () => {
                                     <p className="text-xs font-medium text-muted-foreground mb-1">Projects</p>
                                     <div className="space-y-2">
                                       {c.resume_skills.projects.slice(0, 3).map((p, i) => (
-                                        <div key={i} className="text-xs">
+                                        <div key={`proj-${i}`} className="text-xs">
                                           <span className="font-medium">{p.name}</span>
                                           <span className="text-muted-foreground"> — {p.description}</span>
                                           <div className="flex flex-wrap gap-1 mt-1">
                                             {(p.technologies ?? []).map((t, j) => (
-                                              <Badge key={j} variant="secondary" className="text-xs py-0">{t}</Badge>
+                                              <Badge key={`pt-${t}-${j}`} variant="secondary" className="text-xs py-0">{t}</Badge>
                                             ))}
                                           </div>
                                         </div>
