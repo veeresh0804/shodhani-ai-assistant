@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow, format } from 'date-fns';
+import { logger } from '@/lib/logger';
 
 interface Notification {
   id: string;
@@ -51,14 +52,16 @@ const NotificationsPage: React.FC = () => {
   const markAllRead = async () => {
     const unreadIds = notifications.filter((n) => !n.is_read).map((n) => n.id);
     if (unreadIds.length === 0) return;
-    await supabase.from('notifications').update({ is_read: true }).in('id', unreadIds);
+    const { error } = await supabase.from('notifications').update({ is_read: true }).in('id', unreadIds);
+    if (error) { logger.error('Failed to mark notifications read', error); return; }
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
   };
 
   const handleClick = async (notification: Notification) => {
     if (!notification.is_read) {
-      await supabase.from('notifications').update({ is_read: true }).eq('id', notification.id);
-      setNotifications((prev) =>
+      const { error } = await supabase.from('notifications').update({ is_read: true }).eq('id', notification.id);
+      if (error) logger.error('Failed to mark notification read', error);
+      else setNotifications((prev) =>
         prev.map((n) => (n.id === notification.id ? { ...n, is_read: true } : n))
       );
     }

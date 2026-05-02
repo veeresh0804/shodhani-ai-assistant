@@ -129,7 +129,7 @@ const HomePage: React.FC = () => {
                   'Rich signals on GitHub, LeetCode are unused',
                   'Bias creeps in from names and college names'
                 ].map((item, index) => (
-                  <li key={index} className="flex items-start gap-3">
+                  <li key={item} className="flex items-start gap-3">
                     <XCircle className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
                     <span className="text-muted-foreground">{item}</span>
                   </li>
@@ -150,7 +150,7 @@ const HomePage: React.FC = () => {
                   'Explains every ranking with detailed breakdowns',
                   'Helps students understand their job readiness'
                 ].map((item, index) => (
-                  <li key={index} className="flex items-start gap-3">
+                  <li key={item} className="flex items-start gap-3">
                     <CheckCircle2 className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
                     <span className="text-muted-foreground">{item}</span>
                   </li>

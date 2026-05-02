@@ -11,6 +11,33 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
+import { APPLICATION_STATUS } from '@/lib/constants';
+
+/** Joined shapes returned by Supabase .select() with nested relations */
+interface AppWithJob {
+  id: string;
+  status: string;
+  applied_at: string;
+  jobs: { title: string; recruiters: { company_name: string } | null } | null;
+}
+
+interface InterviewWithJob {
+  id: string;
+  scheduled_at: string;
+  duration_minutes: number | null;
+  meeting_link: string | null;
+  status: string;
+  jobs: { title: string; recruiters: { company_name: string } | null } | null;
+}
+
+interface JobWithRecruiter {
+  id: string;
+  title: string;
+  location: string;
+  job_type: string;
+  required_skills: string[];
+  recruiters: { company_name: string } | null;
+}
 
 const StudentDashboard: React.FC = () => {
   const { studentProfile } = useAuth();
@@ -21,9 +48,9 @@ type Interview = Database['public']['Tables']['interviews']['Row'];
 type Application = Database['public']['Tables']['applications']['Row'];
 
   const [stats, setStats] = useState({ total: 0, pending: 0, shortlisted: 0, rejected: 0, interview: 0 });
-  const [recentJobs, setRecentJobs] = useState<Job[]>([]);
-  const [upcomingInterviews, setUpcomingInterviews] = useState<Interview[]>([]);
-  const [recentApps, setRecentApps] = useState<Application[]>([]);
+  const [recentJobs, setRecentJobs] = useState<JobWithRecruiter[]>([]);
+  const [upcomingInterviews, setUpcomingInterviews] = useState<InterviewWithJob[]>([]);
+  const [recentApps, setRecentApps] = useState<AppWithJob[]>([]);
 
   useEffect(() => {
     if (!studentProfile?.id) return;
@@ -35,13 +62,13 @@ type Application = Database['public']['Tables']['applications']['Row'];
       .eq('student_id', studentProfile.id)
       .order('applied_at', { ascending: false })
       .then(({ data }) => {
-        const apps = (data as any) || [];
+        const apps = (data ?? []) as unknown as AppWithJob[];
         setStats({
           total: apps.length,
-          pending: apps.filter((a: any) => a.status === 'pending' || a.status === 'under_review').length,
-          shortlisted: apps.filter((a: any) => a.status === 'shortlisted').length,
-          rejected: apps.filter((a: any) => a.status === 'rejected').length,
-          interview: apps.filter((a: any) => a.status === 'interview_scheduled').length,
+          pending: apps.filter(a => a.status === APPLICATION_STATUS.PENDING || a.status === APPLICATION_STATUS.UNDER_REVIEW).length,
+          shortlisted: apps.filter(a => a.status === APPLICATION_STATUS.SHORTLISTED).length,
+          rejected: apps.filter(a => a.status === APPLICATION_STATUS.REJECTED).length,
+          interview: apps.filter(a => a.status === APPLICATION_STATUS.INTERVIEW_SCHEDULED).length,
         });
         setRecentApps(apps.slice(0, 5));
       });
@@ -55,7 +82,7 @@ type Application = Database['public']['Tables']['applications']['Row'];
       .eq('status', 'scheduled')
       .order('scheduled_at', { ascending: true })
       .limit(3)
-      .then(({ data }) => setUpcomingInterviews((data as any) || []));
+      .then(({ data }) => setUpcomingInterviews((data ?? []) as unknown as InterviewWithJob[]));
 
     // Fetch recent jobs
     supabase
@@ -64,7 +91,7 @@ type Application = Database['public']['Tables']['applications']['Row'];
       .eq('status', 'active')
       .order('created_at', { ascending: false })
       .limit(4)
-      .then(({ data }) => setRecentJobs((data as any) || []));
+      .then(({ data }) => setRecentJobs((data ?? []) as unknown as JobWithRecruiter[]));
   }, [studentProfile?.id]);
 
   return (
@@ -222,7 +249,7 @@ type Application = Database['public']['Tables']['applications']['Row'];
                 <div className="text-center py-6 text-muted-foreground text-sm">No upcoming interviews scheduled.</div>
               ) : (
                 <div className="space-y-3">
-                  {upcomingInterviews.map((interview: any) => {
+                  {upcomingInterviews.map((interview) => {
                     const date = new Date(interview.scheduled_at);
                     return (
                       <div key={interview.id} className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/30 transition-colors">
@@ -282,7 +309,7 @@ type Application = Database['public']['Tables']['applications']['Row'];
               {recentApps.length > 0 && (
                 <div className="space-y-2">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Recent</p>
-                  {recentApps.slice(0, 3).map((app: any) => (
+                  {recentApps.slice(0, 3).map((app) => (
                     <div key={app.id} className="flex items-center justify-between text-sm py-1.5 border-b border-border last:border-0">
                       <span className="truncate font-medium">{app.jobs?.title || 'Job'}</span>
                       <Badge variant={app.status === 'shortlisted' ? 'default' : app.status === 'rejected' ? 'destructive' : 'secondary'} className="text-xs capitalize">{app.status?.replace('_', ' ')}</Badge>
@@ -312,7 +339,7 @@ type Application = Database['public']['Tables']['applications']['Row'];
               <div className="text-center py-8 text-muted-foreground">No jobs available yet.</div>
             ) : (
               <div className="space-y-4">
-                {recentJobs.map((job: any) => (
+                {recentJobs.map((job) => (
                   <div key={job.id} className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/30 transition-colors">
                     <div className="space-y-1">
                       <h3 className="font-semibold">{job.title}</h3>

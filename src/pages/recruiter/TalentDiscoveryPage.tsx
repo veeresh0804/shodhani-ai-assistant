@@ -46,9 +46,9 @@ const TalentDiscoveryPage: React.FC = () => {
 
       if (!students || !profiles) { setIsLoading(false); return; }
 
-      const profileMap = Object.fromEntries(profiles.map((p: any) => [p.student_id, p]));
+      const profileMap = Object.fromEntries(profiles.map((p) => [p.student_id, p]));
 
-      const talentList: TalentProfile[] = students.map((s: any) => {
+      const talentList: TalentProfile[] = students.map((s) => {
         const p = profileMap[s.id];
         const analysis = p?.gemini_analysis as any;
         const resumeSkills = p?.resume_skills as any;

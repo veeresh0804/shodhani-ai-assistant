@@ -12,7 +12,7 @@ interface ApplicationWithJob {
   jobs: { title: string; recruiters: { company_name: string } | null } | null;
 }
 
-const statusConfig: Record<string, { label: string; class: string; icon: any }> = {
+const statusConfig: Record<string, { label: string; class: string; icon: React.ElementType }> = {
   pending: { label: 'Pending', class: 'badge-warning', icon: Clock },
   under_review: { label: 'Under Review', class: 'badge-primary', icon: FileSearch },
   shortlisted: { label: 'Shortlisted', class: 'badge-success', icon: CheckCircle2 },
@@ -33,7 +33,7 @@ const ApplicationsPage: React.FC = () => {
         .select('id, status, applied_at, jobs(title, recruiters(company_name))')
         .eq('student_id', studentProfile.id)
         .order('applied_at', { ascending: false });
-      setApplications((data as any) || []);
+      setApplications((data ?? []) as unknown as ApplicationWithJob[]);
       setIsLoading(false);
     };
     fetchApps();

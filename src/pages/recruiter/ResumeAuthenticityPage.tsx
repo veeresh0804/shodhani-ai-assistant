@@ -16,7 +16,7 @@ interface StudentEntry {
   id: string;
   name: string;
   institution: string;
-  profile: any;
+  profile: Record<string, unknown> | null;
 }
 
 interface AuthenticityResult {
@@ -44,8 +44,8 @@ const ResumeAuthenticityPage: React.FC = () => {
       const { data: studs } = await supabase.from('students').select('id, name, institution');
       const { data: profiles } = await supabase.from('student_profiles').select('student_id, github_data, leetcode_data, resume_skills, gemini_analysis, github_url, leetcode_url');
       if (!studs) { setIsLoading(false); return; }
-      const profileMap = Object.fromEntries((profiles || []).map((p: any) => [p.student_id, p]));
-      setStudents(studs.map((s: any) => ({ id: s.id, name: s.name, institution: s.institution, profile: profileMap[s.id] || null })));
+      const profileMap = Object.fromEntries((profiles || []).map((p) => [p.student_id, p]));
+      setStudents(studs.map((s) => ({ id: s.id, name: s.name, institution: s.institution, profile: profileMap[s.id] || null })));
       setIsLoading(false);
     };
     fetch();

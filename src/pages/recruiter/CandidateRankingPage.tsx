@@ -103,7 +103,7 @@ const CandidateRankingPage: React.FC = () => {
         return;
       }
       // Fetch current statuses for all applications
-      const appIds = (data.candidates || []).map((c: any) => c.application_id);
+      const appIds = (data.candidates || []).map((c: Record<string, string>) => c.application_id);
       let statusMap: Record<string, string> = {};
       if (appIds.length > 0) {
         const { data: apps } = await supabase
@@ -114,9 +114,9 @@ const CandidateRankingPage: React.FC = () => {
           statusMap = Object.fromEntries(apps.map((a) => [a.id, a.status]));
         }
       }
-      const enriched = (data.candidates || []).map((c: any) => ({
+      const enriched = (data.candidates || []).map((c: Record<string, unknown>) => ({
         ...c,
-        status: statusMap[c.application_id] || 'pending',
+        status: statusMap[c.application_id as string] || 'pending',
       }));
       setCandidates(enriched);
       setSummary(data.summary || '');
@@ -126,9 +126,9 @@ const CandidateRankingPage: React.FC = () => {
       } else {
         toast({ title: 'Ranking complete!', description: `${enriched.length} candidates ranked.` });
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       logger.error(e);
-      toast({ title: 'Error', description: e.message || 'Failed to rank candidates', variant: 'destructive' });
+      toast({ title: 'Error', description: describeEdgeError(e), variant: 'destructive' });
     } finally {
       setIsRanking(false);
     }

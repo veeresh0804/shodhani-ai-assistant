@@ -63,15 +63,15 @@ const RecruiterCRMPage: React.FC = () => {
 
       const { data: apps } = await supabase.from('applications').select('id, student_id, job_id, status, applied_at, recruiter_feedback')
         .in('job_id', jobsData.map(j => j.id));
-      const studentIds = [...new Set((apps || []).map((a: any) => a.student_id))];
+      const studentIds = [...new Set((apps || []).map((a) => a.student_id))];
       const { data: students } = await supabase.from('students').select('id, name').in('id', studentIds);
-      const { data: interviews } = await supabase.from('interviews').select('application_id').in('application_id', (apps || []).map((a: any) => a.id));
+      const { data: interviews } = await supabase.from('interviews').select('application_id').in('application_id', (apps || []).map((a) => a.id));
 
-      const studentMap = Object.fromEntries((students || []).map((s: any) => [s.id, s.name]));
+      const studentMap = Object.fromEntries((students || []).map((s) => [s.id, s.name]));
       const jobMap = Object.fromEntries(jobsData.map(j => [j.id, j.title]));
-      const interviewSet = new Set((interviews || []).map((i: any) => i.application_id));
+      const interviewSet = new Set((interviews || []).map((i) => i.application_id));
 
-      setCandidates((apps || []).map((a: any) => ({
+      setCandidates((apps || []).map((a) => ({
         application_id: a.id,
         student_name: studentMap[a.student_id] || 'Unknown',
         job_title: jobMap[a.job_id] || 'Unknown',

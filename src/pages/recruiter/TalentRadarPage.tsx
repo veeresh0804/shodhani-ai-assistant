@@ -45,7 +45,7 @@ const TalentRadarPage: React.FC = () => {
       const skillCount: Record<string, number> = {};
       let scoreSum = 0;
       let scoreCount = 0;
-      (profiles || []).forEach((p: any) => {
+      (profiles || []).forEach((p) => {
         const skills = [
           ...((p.gemini_analysis as any)?.technical_skills || []),
           ...((p.resume_skills as any)?.technical_skills || []),
@@ -73,17 +73,17 @@ const TalentRadarPage: React.FC = () => {
 
       // Institution distribution
       const instCount: Record<string, number> = {};
-      students.forEach((s: any) => { instCount[s.institution] = (instCount[s.institution] || 0) + 1; });
+      students.forEach((s) => { instCount[s.institution] = (instCount[s.institution] || 0) + 1; });
       setInstitutions(Object.entries(instCount).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([name, count]) => ({ name, count })));
 
       // Graduation year distribution
       const yearCount: Record<number, number> = {};
-      students.forEach((s: any) => { yearCount[s.graduation_year] = (yearCount[s.graduation_year] || 0) + 1; });
+      students.forEach((s) => { yearCount[s.graduation_year] = (yearCount[s.graduation_year] || 0) + 1; });
       setGradYearDist(Object.entries(yearCount).map(([year, count]) => ({ year: Number(year), count: count as number })).sort((a, b) => a.year - b.year));
 
       // Degree distribution
       const degCount: Record<string, number> = {};
-      students.forEach((s: any) => { degCount[s.degree] = (degCount[s.degree] || 0) + 1; });
+      students.forEach((s) => { degCount[s.degree] = (degCount[s.degree] || 0) + 1; });
       setDegreeDist(Object.entries(degCount).sort((a, b) => b[1] - a[1]).map(([degree, count]) => ({ degree, count: count as number })));
 
       setIsLoading(false);

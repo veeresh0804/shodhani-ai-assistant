@@ -16,7 +16,7 @@ interface StudentEntry {
   id: string;
   name: string;
   institution: string;
-  github_data: any;
+  github_data: Record<string, unknown> | null;
 }
 
 interface ProjectScore {
@@ -53,8 +53,8 @@ const ProjectScoringPage: React.FC = () => {
       const { data: studs } = await supabase.from('students').select('id, name, institution');
       const { data: profiles } = await supabase.from('student_profiles').select('student_id, github_data');
       if (!studs) { setIsLoading(false); return; }
-      const profileMap = Object.fromEntries((profiles || []).map((p: any) => [p.student_id, p]));
-      setStudents(studs.map((s: any) => ({
+      const profileMap = Object.fromEntries((profiles || []).map((p) => [p.student_id, p]));
+      setStudents(studs.map((s) => ({
         id: s.id, name: s.name, institution: s.institution,
         github_data: profileMap[s.id]?.github_data || null,
       })));

@@ -4,9 +4,11 @@
  */
 export const APPLICATION_STATUS = {
   PENDING: 'pending',
+  UNDER_REVIEW: 'under_review',
   SHORTLISTED: 'shortlisted',
   REJECTED: 'rejected',
   INTERVIEW: 'interview',
+  INTERVIEW_SCHEDULED: 'interview_scheduled',
 } as const;
 
 export const JOB_STATUS = {
