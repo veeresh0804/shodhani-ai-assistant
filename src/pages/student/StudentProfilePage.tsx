@@ -26,8 +26,8 @@ interface ProfileAnalysis {
 }
 
 interface ExtractedData {
-  github_data: any;
-  leetcode_data: any;
+  github_data: Record<string, unknown>;
+  leetcode_data: Record<string, unknown>;
   analysis: ProfileAnalysis;
 }
 

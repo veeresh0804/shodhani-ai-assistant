@@ -65,11 +65,11 @@ const InterviewCalendarView: React.FC<Props> = ({ interviews, onCancel }) => {
     <div className="space-y-4">
       {/* Month navigation */}
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size="icon" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
+        <Button variant="ghost" size="icon" aria-label="Previous month" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
           <ChevronLeft className="w-5 h-5" />
         </Button>
         <h2 className="text-lg font-semibold">{format(currentMonth, 'MMMM yyyy')}</h2>
-        <Button variant="ghost" size="icon" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
+        <Button variant="ghost" size="icon" aria-label="Next month" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
           <ChevronRight className="w-5 h-5" />
         </Button>
       </div>
