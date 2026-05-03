@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { describeEdgeError } from '@/lib/edgeError';
 import { logger } from '@/lib/logger';
 
-type Job = Database['public']['Tables']['jobs']['Row'];
+type Job = Pick<Database['public']['Tables']['jobs']['Row'], 'id' | 'title' | 'description' | 'required_skills'>;
 
 const BiasDetectorPage: React.FC = () => {
   const { recruiterProfile } = useAuth();
