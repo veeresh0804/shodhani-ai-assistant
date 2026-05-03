@@ -51,49 +51,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProfile = useCallback(async (userId: string) => {
     setIsProfileLoading(true);
-    // Check recruiter profile
-    const { data: recruiter, error: rErr } = await supabase
-      .from('recruiters')
-      .select('*')
-      .eq('user_id', userId)
-      .maybeSingle();
+    try {
+      const { data: isAdmin, error: adminErr } = await supabase.rpc('has_role', { _user_id: userId, _role: 'admin' });
+      if (adminErr) console.error('Failed to check admin role', adminErr);
+      if (isAdmin) {
+        setUserType('admin');
+        setRecruiterProfile(null);
+        setStudentProfile(null);
+        return;
+      }
 
-    if (rErr) {
-      console.error('Failed to fetch recruiter profile', rErr);
-      setIsProfileLoading(false);
-      return;
-    }
-    if (recruiter) {
-      setUserType('recruiter');
-      setRecruiterProfile(recruiter as RecruiterProfile);
-      setStudentProfile(null);
-      setIsProfileLoading(false);
-      return;
-    }
+      const { data: recruiter, error: rErr } = await supabase
+        .from('recruiters').select('*').eq('user_id', userId).maybeSingle();
+      if (rErr) { console.error('Failed to fetch recruiter profile', rErr); return; }
+      if (recruiter) {
+        setUserType('recruiter');
+        setRecruiterProfile(recruiter as RecruiterProfile);
+        setStudentProfile(null);
+        return;
+      }
 
-    // Check student profile
-    const { data: student, error: sErr } = await supabase
-      .from('students')
-      .select('*')
-      .eq('user_id', userId)
-      .maybeSingle();
-
-    if (sErr) {
-      console.error('Failed to fetch student profile', sErr);
+      const { data: student, error: sErr } = await supabase
+        .from('students').select('*').eq('user_id', userId).maybeSingle();
+      if (sErr) { console.error('Failed to fetch student profile', sErr); return; }
+      if (student) {
+        setUserType('student');
+        setStudentProfile(student as StudentProfile);
+        setRecruiterProfile(null);
+      } else {
+        setUserType(null);
+        setRecruiterProfile(null);
+        setStudentProfile(null);
+      }
+    } finally {
       setIsProfileLoading(false);
-      return;
     }
-    if (student) {
-      setUserType('student');
-      setStudentProfile(student as StudentProfile);
-      setRecruiterProfile(null);
-    } else {
-      // No profile yet (just signed up, profile will be created on register)
-      setUserType(null);
-      setRecruiterProfile(null);
-      setStudentProfile(null);
-    }
-    setIsProfileLoading(false);
   }, []);
 
   const refreshProfile = useCallback(async () => {
