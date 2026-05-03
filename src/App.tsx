@@ -55,8 +55,11 @@ const ProtectedRoute = ({
 }) => {
   const { isAuthenticated, userType, isLoading } = useAuth();
   if (isLoading) return <div className="min-h-screen flex items-center justify-center"><span>Loading...</span></div>;
-  if (!isAuthenticated) return <Navigate to={`/${requiredType}/login`} replace />;
-  if (userType !== requiredType) return <Navigate to={`/${userType}/dashboard`} replace />;
+  if (!isAuthenticated) return <Navigate to={`/${requiredType ?? 'student'}/login`} replace />;
+  if (userType !== requiredType) {
+    if (userType) return <Navigate to={`/${userType}/dashboard`} replace />;
+    return <Navigate to="/" replace />;
+  }
   return <>{children}</>;
 };
 

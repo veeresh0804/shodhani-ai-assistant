@@ -138,7 +138,7 @@ const PortfolioBuilderPage: React.FC = () => {
                 <CardHeader><CardTitle className="flex items-center gap-2"><Briefcase className="w-5 h-5 text-primary" /> Projects</CardTitle></CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {portfolio.projects.map((p: any, i: number) => (
+                    {portfolio.projects.map((p: { name: string; description: string; technologies?: string[]; highlights?: string[] }, i: number) => (
                       <div key={`proj-${i}`} className="p-4 rounded-lg border border-border hover:border-primary/30 transition-colors">
                         <h4 className="font-semibold mb-1">{p.name}</h4>
                         <p className="text-sm text-muted-foreground mb-3">{p.description}</p>
@@ -163,7 +163,7 @@ const PortfolioBuilderPage: React.FC = () => {
                 <CardHeader><CardTitle className="flex items-center gap-2"><Trophy className="w-5 h-5 text-primary" /> Achievements</CardTitle></CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {portfolio.achievements.map((a: any, i: number) => (
+                    {portfolio.achievements.map((a: { icon: string; title: string; detail: string }, i: number) => (
                       <div key={`tip-${i}`} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
                         {iconMap[a.icon] || <Star className="w-5 h-5 text-primary" />}
                         <div>
