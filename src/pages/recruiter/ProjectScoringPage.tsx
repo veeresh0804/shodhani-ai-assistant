@@ -56,7 +56,7 @@ const ProjectScoringPage: React.FC = () => {
       const profileMap = Object.fromEntries((profiles || []).map((p) => [p.student_id, p]));
       setStudents(studs.map((s) => ({
         id: s.id, name: s.name, institution: s.institution,
-        github_data: profileMap[s.id]?.github_data || null,
+        github_data: (profileMap[s.id]?.github_data as Record<string, unknown> | null) || null,
       })));
       setIsLoading(false);
     };
